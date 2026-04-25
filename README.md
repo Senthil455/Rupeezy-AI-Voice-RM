@@ -10,7 +10,7 @@
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+
-- Anthropic API key (free tier works)
+- GROQ API key (free tier works)
 
 ### Step 1 — Clone & Configure
 ```bash
@@ -18,10 +18,10 @@ git clone <repo>
 cd rupeezy-ai
 
 # Set your API key
-export ANTHROPIC_API_KEY=sk-ant-your-key-here
+export GROQ_API_KEY=gsk-your-key-here
 
 # OR create backend/.env file:
-echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" > backend/.env
+echo "GROQ_API_KEY=gsk-your-key-here" > backend/.env
 ```
 
 ### Step 2 — One-Command Start
@@ -126,9 +126,9 @@ rupeezy-ai/
 │  /api/whatsapp/          ──► WhatsApp Simulation            │
 └─────────┬───────────────────────────┬───────────────────────┘
           │                           │
-┌─────────▼──────────┐    ┌──────────▼──────────────┐
-│  Anthropic Claude   │    │   JSON Data Store        │
-│  (LLM + Scoring)   │    │   (MongoDB-ready)         │
+┌─────────▼──────────┐    ┌───────────▼──────────────┐
+│  Groq API          │    │   JSON Data Store        │
+│  (LLM + Scoring)   │    │   (MongoDB-ready)        │
 └────────────────────┘    └──────────────────────────┘
 ```
 
@@ -217,18 +217,24 @@ Each state drives context-aware LLM prompting. The agent never sounds scripted.
 
 Edit `backend/.env`:
 ```env
-ANTHROPIC_API_KEY=sk-ant-...       # Required
+GROQ_API_KEY=gsk-...       # Required
 ELEVENLABS_API_KEY=...             # Optional (production TTS)
 META_WHATSAPP_TOKEN=...            # Optional (production WhatsApp)
 ```
 
 ---
 
+## 🔥 Model Used
+
+- Provider: :contentReference[oaicite:0]{index=0}  
+- Model: llama3-70b-8192  
+- Benefit: Ultra-fast inference + free tier
+
 ## 🐳 Docker Deployment
 
 ```bash
 # Set API key
-export ANTHROPIC_API_KEY=sk-ant-your-key
+export GROQ_API_KEY=gsk-your-key
 
 # Start with Docker
 docker-compose up --build
