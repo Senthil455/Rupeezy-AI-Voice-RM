@@ -1,0 +1,586 @@
+[
+  {
+    "id": "56a6cfd9-6c7",
+    "lead_id": "FB5F188A",
+    "started_at": "2026-04-25T17:56:08.136863",
+    "ended_at": "2026-04-25T17:56:12.655208",
+    "duration_seconds": 4,
+    "messages": [
+      {
+        "id": "862a0030",
+        "role": "agent",
+        "content": "\u0928\u092e\u0938\u094d\u0924\u0947! \u092e\u0948\u0902 Priya \u0939\u0942\u0902 Rupeezy \u0938\u0947\u0964 \u0915\u094d\u092f\u093e \u0906\u092a Rajesh Kumar \u091c\u0940 \u0938\u0947 \u092c\u093e\u0924 \u0915\u0930 \u0938\u0915\u0924\u0940 \u0939\u0942\u0902? \u092c\u0938 2 \u092e\u093f\u0928\u091f \u2014 \u0906\u092a\u0915\u0947 \u0932\u093f\u090f \u090f\u0915 \u092c\u0947\u0939\u0924\u0930\u0940\u0928 earning opportunity \u0939\u0948\u0964",
+        "timestamp": "2026-04-25T17:56:08.151420",
+        "metadata": {
+          "state": "GREETING"
+        }
+      }
+    ],
+    "language": "hindi",
+    "detected_languages": [
+      "hindi"
+    ],
+    "objections_raised": [],
+    "objections_resolved": [],
+    "sentiment_timeline": [],
+    "score": 0,
+    "score_label": "unscored",
+    "state": "END",
+    "summary": {
+      "score": 0,
+      "label": "cold",
+      "interest_level": 35,
+      "readiness": 0,
+      "network_signal": 50,
+      "engagement_quality": 0,
+      "objections_detected": [],
+      "objections_resolved": [],
+      "buying_signals": [],
+      "rejection_signals": [],
+      "total_exchanges": 0,
+      "reasoning": "Low engagement or rejection signals present. Recommend cold nurture sequence.",
+      "summary": {
+        "headline": "Rajesh Kumar \u2014 COLD lead",
+        "what_worked": "Agent pitched key benefits and handled objections",
+        "key_moments": [
+          "Opening pitch delivered",
+          "Benefits explained"
+        ],
+        "objections_handled": [],
+        "lead_sentiment": "neutral",
+        "final_state": "needs_follow_up",
+        "recommended_action": "Send WhatsApp follow-up and schedule callback",
+        "whatsapp_message": "Hi Rajesh Kumar! Thanks for your time. Here's the Rupeezy partner sign-up link: rupeezy.in/partner"
+      }
+    }
+  },
+  {
+    "id": "6e665ac0-f11",
+    "lead_id": "FB5F188A",
+    "started_at": "2026-04-25T17:56:24.735405",
+    "ended_at": "2026-04-25T17:56:58.844269",
+    "duration_seconds": 34,
+    "messages": [
+      {
+        "id": "b6c27ed3",
+        "role": "agent",
+        "content": "\u0928\u092e\u0938\u094d\u0924\u0947! \u092e\u0948\u0902 Priya \u0939\u0942\u0902 Rupeezy \u0938\u0947\u0964 \u0915\u094d\u092f\u093e \u0906\u092a Rajesh Kumar \u091c\u0940 \u0938\u0947 \u092c\u093e\u0924 \u0915\u0930 \u0938\u0915\u0924\u0940 \u0939\u0942\u0902? \u092c\u0938 2 \u092e\u093f\u0928\u091f \u2014 \u0906\u092a\u0915\u0947 \u0932\u093f\u090f \u090f\u0915 \u092c\u0947\u0939\u0924\u0930\u0940\u0928 earning opportunity \u0939\u0948\u0964",
+        "timestamp": "2026-04-25T17:56:24.747881",
+        "metadata": {
+          "state": "GREETING"
+        }
+      },
+      {
+        "id": "e23fbd0a",
+        "role": "user",
+        "content": "hi",
+        "timestamp": "2026-04-25T17:56:36.360834",
+        "metadata": {
+          "detected_language": "hinglish"
+        }
+      },
+      {
+        "id": "be368f08",
+        "role": "agent",
+        "content": "Hello Rajesh Kumar ji! Rupeezy mein zero fee, 100% brokerage, daily payouts. Sunenge?",
+        "timestamp": "2026-04-25T17:56:36.495935",
+        "metadata": {
+          "state": "PITCH"
+        }
+      },
+      {
+        "id": "7f160618",
+        "role": "user",
+        "content": "can you speech in tamil",
+        "timestamp": "2026-04-25T17:56:49.481353",
+        "metadata": {
+          "detected_language": "hinglish"
+        }
+      },
+      {
+        "id": "9ea142e0",
+        "role": "agent",
+        "content": "Industry ka best deal milega aapko. Abhi kitne clients handle karte ho?",
+        "timestamp": "2026-04-25T17:56:49.578691",
+        "metadata": {
+          "state": "PITCH"
+        }
+      }
+    ],
+    "language": "hinglish",
+    "detected_languages": [
+      "hindi",
+      "english"
+    ],
+    "objections_raised": [],
+    "objections_resolved": [],
+    "sentiment_timeline": [],
+    "score": 0,
+    "score_label": "unscored",
+    "state": "END",
+    "summary": {
+      "score": -1,
+      "label": "cold",
+      "interest_level": 28,
+      "readiness": 0,
+      "network_signal": 50,
+      "engagement_quality": 30,
+      "objections_detected": [],
+      "objections_resolved": [],
+      "buying_signals": [],
+      "rejection_signals": [],
+      "total_exchanges": 2,
+      "reasoning": "Low engagement or rejection signals present. Recommend cold nurture sequence.",
+      "summary": {
+        "headline": "Rajesh Kumar \u2014 COLD lead",
+        "what_worked": "Agent pitched key benefits and handled objections",
+        "key_moments": [
+          "Opening pitch delivered",
+          "Benefits explained"
+        ],
+        "objections_handled": [],
+        "lead_sentiment": "neutral",
+        "final_state": "needs_follow_up",
+        "recommended_action": "Send WhatsApp follow-up and schedule callback",
+        "whatsapp_message": "Hi Rajesh Kumar! Thanks for your time. Here's the Rupeezy partner sign-up link: rupeezy.in/partner"
+      }
+    }
+  },
+  {
+    "id": "0efd03ad-7b9",
+    "lead_id": "E7F5DD6E",
+    "started_at": "2026-04-25T17:57:16.413719",
+    "ended_at": "2026-04-25T17:57:46.160957",
+    "duration_seconds": 29,
+    "messages": [
+      {
+        "id": "674cdf81",
+        "role": "agent",
+        "content": "Hi! I'm Priya from Rupeezy. Am I speaking with Rajesh Kumar? I have an exciting partner opportunity \u2014 just 2 minutes of your time?",
+        "timestamp": "2026-04-25T17:57:16.425357",
+        "metadata": {
+          "state": "GREETING"
+        }
+      }
+    ],
+    "language": "english",
+    "detected_languages": [
+      "english"
+    ],
+    "objections_raised": [],
+    "objections_resolved": [],
+    "sentiment_timeline": [],
+    "score": 0,
+    "score_label": "unscored",
+    "state": "END",
+    "summary": {
+      "score": 0,
+      "label": "cold",
+      "interest_level": 35,
+      "readiness": 0,
+      "network_signal": 50,
+      "engagement_quality": 0,
+      "objections_detected": [],
+      "objections_resolved": [],
+      "buying_signals": [],
+      "rejection_signals": [],
+      "total_exchanges": 0,
+      "reasoning": "Low engagement or rejection signals present. Recommend cold nurture sequence.",
+      "summary": {
+        "headline": "Rajesh Kumar \u2014 COLD lead",
+        "what_worked": "Agent pitched key benefits and handled objections",
+        "key_moments": [
+          "Opening pitch delivered",
+          "Benefits explained"
+        ],
+        "objections_handled": [],
+        "lead_sentiment": "neutral",
+        "final_state": "needs_follow_up",
+        "recommended_action": "Send WhatsApp follow-up and schedule callback",
+        "whatsapp_message": "Hi Rajesh Kumar! Thanks for your time. Here's the Rupeezy partner sign-up link: rupeezy.in/partner"
+      }
+    }
+  },
+  {
+    "id": "a785c398-470",
+    "lead_id": "E7F5DD6E",
+    "started_at": "2026-04-25T17:58:24.155044",
+    "ended_at": "2026-04-25T17:59:13.864856",
+    "duration_seconds": 49,
+    "messages": [
+      {
+        "id": "a223f343",
+        "role": "agent",
+        "content": "Hi! I'm Priya from Rupeezy. Am I speaking with Rajesh Kumar? I have an exciting partner opportunity \u2014 just 2 minutes of your time?",
+        "timestamp": "2026-04-25T17:58:24.168902",
+        "metadata": {
+          "state": "GREETING"
+        }
+      },
+      {
+        "id": "eba72e80",
+        "role": "user",
+        "content": "hi",
+        "timestamp": "2026-04-25T17:58:26.756766",
+        "metadata": {
+          "detected_language": "english"
+        }
+      },
+      {
+        "id": "71d3c53d",
+        "role": "agent",
+        "content": "Hi Rajesh Kumar! Rupeezy's Partner Program \u2014 zero fee, 100% brokerage, daily payouts. Want to know more?",
+        "timestamp": "2026-04-25T17:58:26.911587",
+        "metadata": {
+          "state": "PITCH"
+        }
+      },
+      {
+        "id": "c877140a",
+        "role": "user",
+        "content": "who are you",
+        "timestamp": "2026-04-25T17:58:35.156153",
+        "metadata": {
+          "detected_language": "english"
+        }
+      },
+      {
+        "id": "77a7a8e0",
+        "role": "agent",
+        "content": "You'd be getting the best deal in the industry. How many clients do you currently work with?",
+        "timestamp": "2026-04-25T17:58:35.327925",
+        "metadata": {
+          "state": "PITCH"
+        }
+      },
+      {
+        "id": "68ea850d",
+        "role": "user",
+        "content": "what is your name",
+        "timestamp": "2026-04-25T17:58:45.800454",
+        "metadata": {
+          "detected_language": "english"
+        }
+      },
+      {
+        "id": "52025e61",
+        "role": "agent",
+        "content": "You'd be getting the best deal in the industry. How many clients do you currently work with?",
+        "timestamp": "2026-04-25T17:58:45.887643",
+        "metadata": {
+          "state": "QUALIFICATION"
+        }
+      },
+      {
+        "id": "bc3a0072",
+        "role": "user",
+        "content": "yo",
+        "timestamp": "2026-04-25T17:58:48.713766",
+        "metadata": {
+          "detected_language": "english"
+        }
+      },
+      {
+        "id": "e06ed065",
+        "role": "agent",
+        "content": "You'd be getting the best deal in the industry. How many clients do you currently work with?",
+        "timestamp": "2026-04-25T17:58:48.813285",
+        "metadata": {
+          "state": "QUALIFICATION"
+        }
+      },
+      {
+        "id": "323cf92b",
+        "role": "user",
+        "content": "i asked who are you",
+        "timestamp": "2026-04-25T17:58:59.704721",
+        "metadata": {
+          "detected_language": "english"
+        }
+      },
+      {
+        "id": "333c350a",
+        "role": "agent",
+        "content": "You'd be getting the best deal in the industry. How many clients do you currently work with?",
+        "timestamp": "2026-04-25T17:58:59.813236",
+        "metadata": {
+          "state": "OBJECTION_HANDLING"
+        }
+      }
+    ],
+    "language": "english",
+    "detected_languages": [
+      "english"
+    ],
+    "objections_raised": [],
+    "objections_resolved": [],
+    "sentiment_timeline": [],
+    "score": 0,
+    "score_label": "unscored",
+    "state": "END",
+    "summary": {
+      "score": 0,
+      "label": "cold",
+      "interest_level": 35,
+      "readiness": 0,
+      "network_signal": 50,
+      "engagement_quality": 75,
+      "objections_detected": [],
+      "objections_resolved": [],
+      "buying_signals": [],
+      "rejection_signals": [],
+      "total_exchanges": 5,
+      "reasoning": "Low engagement or rejection signals present. Recommend cold nurture sequence.",
+      "summary": {
+        "headline": "Rajesh Kumar \u2014 COLD lead",
+        "what_worked": "Agent pitched key benefits and handled objections",
+        "key_moments": [
+          "Opening pitch delivered",
+          "Benefits explained"
+        ],
+        "objections_handled": [],
+        "lead_sentiment": "neutral",
+        "final_state": "needs_follow_up",
+        "recommended_action": "Send WhatsApp follow-up and schedule callback",
+        "whatsapp_message": "Hi Rajesh Kumar! Thanks for your time. Here's the Rupeezy partner sign-up link: rupeezy.in/partner"
+      }
+    }
+  },
+  {
+    "id": "fc6e1c9f-be1",
+    "lead_id": "4BEF0E5A",
+    "started_at": "2026-04-25T18:00:06.156112",
+    "ended_at": "2026-04-25T18:00:20.348324",
+    "duration_seconds": 14,
+    "messages": [
+      {
+        "id": "932eac81",
+        "role": "agent",
+        "content": "Hi! I'm Priya from Rupeezy. Am I speaking with Meera Iyer? I have an exciting partner opportunity \u2014 just 2 minutes of your time?",
+        "timestamp": "2026-04-25T18:00:06.172548",
+        "metadata": {
+          "state": "GREETING"
+        }
+      },
+      {
+        "id": "4e44f00f",
+        "role": "user",
+        "content": "hi",
+        "timestamp": "2026-04-25T18:00:08.842861",
+        "metadata": {
+          "detected_language": "english"
+        }
+      },
+      {
+        "id": "32c15cb6",
+        "role": "agent",
+        "content": "Hi Meera Iyer! Rupeezy's Partner Program \u2014 zero fee, 100% brokerage, daily payouts. Want to know more?",
+        "timestamp": "2026-04-25T18:00:09.120129",
+        "metadata": {
+          "state": "PITCH"
+        }
+      },
+      {
+        "id": "7dc66a1d",
+        "role": "user",
+        "content": "rgkejrg",
+        "timestamp": "2026-04-25T18:00:11.213454",
+        "metadata": {
+          "detected_language": "english"
+        }
+      },
+      {
+        "id": "17d30b15",
+        "role": "agent",
+        "content": "You'd be getting the best deal in the industry. How many clients do you currently work with?",
+        "timestamp": "2026-04-25T18:00:11.289968",
+        "metadata": {
+          "state": "PITCH"
+        }
+      },
+      {
+        "id": "e9468fd0",
+        "role": "user",
+        "content": "jrgjkbe",
+        "timestamp": "2026-04-25T18:00:12.637669",
+        "metadata": {
+          "detected_language": "english"
+        }
+      },
+      {
+        "id": "2d0a4290",
+        "role": "agent",
+        "content": "You'd be getting the best deal in the industry. How many clients do you currently work with?",
+        "timestamp": "2026-04-25T18:00:12.723757",
+        "metadata": {
+          "state": "QUALIFICATION"
+        }
+      },
+      {
+        "id": "8a9620f9",
+        "role": "user",
+        "content": "hfoiuewhrf",
+        "timestamp": "2026-04-25T18:00:15.472895",
+        "metadata": {
+          "detected_language": "english"
+        }
+      },
+      {
+        "id": "8cc74eca",
+        "role": "agent",
+        "content": "You'd be getting the best deal in the industry. How many clients do you currently work with?",
+        "timestamp": "2026-04-25T18:00:15.555065",
+        "metadata": {
+          "state": "QUALIFICATION"
+        }
+      }
+    ],
+    "language": "english",
+    "detected_languages": [
+      "english"
+    ],
+    "objections_raised": [],
+    "objections_resolved": [],
+    "sentiment_timeline": [],
+    "score": 0,
+    "score_label": "unscored",
+    "state": "END",
+    "summary": {
+      "score": -2,
+      "label": "cold",
+      "interest_level": 21,
+      "readiness": 0,
+      "network_signal": 50,
+      "engagement_quality": 60,
+      "objections_detected": [],
+      "objections_resolved": [],
+      "buying_signals": [],
+      "rejection_signals": [],
+      "total_exchanges": 4,
+      "reasoning": "Low engagement or rejection signals present. Recommend cold nurture sequence.",
+      "summary": {
+        "headline": "Meera Iyer \u2014 COLD lead",
+        "what_worked": "Agent pitched key benefits and handled objections",
+        "key_moments": [
+          "Opening pitch delivered",
+          "Benefits explained"
+        ],
+        "objections_handled": [],
+        "lead_sentiment": "neutral",
+        "final_state": "needs_follow_up",
+        "recommended_action": "Send WhatsApp follow-up and schedule callback",
+        "whatsapp_message": "Hi Meera Iyer! Thanks for your time. Here's the Rupeezy partner sign-up link: rupeezy.in/partner"
+      }
+    }
+  },
+  {
+    "id": "d34b1ca4-bb0",
+    "lead_id": "FB5F188A",
+    "started_at": "2026-04-25T18:05:16.511550",
+    "ended_at": "2026-04-25T18:05:28.372680",
+    "duration_seconds": 11,
+    "messages": [
+      {
+        "id": "5cfaa889",
+        "role": "agent",
+        "content": "\u0928\u092e\u0938\u094d\u0924\u0947! \u092e\u0948\u0902 Priya \u0939\u0942\u0902 Rupeezy \u0938\u0947\u0964 \u0915\u094d\u092f\u093e \u0906\u092a Rajesh Kumar \u091c\u0940 \u0938\u0947 \u092c\u093e\u0924 \u0915\u0930 \u0938\u0915\u0924\u0940 \u0939\u0942\u0902? \u092c\u0938 2 \u092e\u093f\u0928\u091f \u2014 \u0906\u092a\u0915\u0947 \u0932\u093f\u090f \u090f\u0915 \u092c\u0947\u0939\u0924\u0930\u0940\u0928 earning opportunity \u0939\u0948\u0964",
+        "timestamp": "2026-04-25T18:05:16.527621",
+        "metadata": {
+          "state": "GREETING"
+        }
+      }
+    ],
+    "language": "hindi",
+    "detected_languages": [
+      "hindi"
+    ],
+    "objections_raised": [],
+    "objections_resolved": [],
+    "sentiment_timeline": [],
+    "score": 0,
+    "score_label": "unscored",
+    "state": "END",
+    "summary": {
+      "score": 0,
+      "label": "cold",
+      "interest_level": 35,
+      "readiness": 0,
+      "network_signal": 50,
+      "engagement_quality": 0,
+      "objections_detected": [],
+      "objections_resolved": [],
+      "buying_signals": [],
+      "rejection_signals": [],
+      "total_exchanges": 0,
+      "reasoning": "Low engagement or rejection signals present. Recommend cold nurture sequence.",
+      "summary": {
+        "headline": "Rajesh Kumar \u2014 COLD lead",
+        "what_worked": "Agent pitched key benefits and handled objections",
+        "key_moments": [
+          "Opening pitch delivered",
+          "Benefits explained"
+        ],
+        "objections_handled": [],
+        "lead_sentiment": "neutral",
+        "final_state": "needs_follow_up",
+        "recommended_action": "Send WhatsApp follow-up and schedule callback",
+        "whatsapp_message": "Hi Rajesh Kumar! Thanks for your time. Here's the Rupeezy partner sign-up link: rupeezy.in/partner"
+      }
+    }
+  },
+  {
+    "id": "12844704-4dc",
+    "lead_id": "FB5F188A",
+    "started_at": "2026-04-25T18:05:34.257571",
+    "ended_at": "2026-04-25T18:05:36.836519",
+    "duration_seconds": 2,
+    "messages": [
+      {
+        "id": "e8fcda5b",
+        "role": "agent",
+        "content": "\u0928\u092e\u0938\u094d\u0924\u0947! \u092e\u0948\u0902 Priya \u0939\u0942\u0902 Rupeezy \u0938\u0947\u0964 \u0915\u094d\u092f\u093e \u0906\u092a Rajesh Kumar \u091c\u0940 \u0938\u0947 \u092c\u093e\u0924 \u0915\u0930 \u0938\u0915\u0924\u0940 \u0939\u0942\u0902? \u092c\u0938 2 \u092e\u093f\u0928\u091f \u2014 \u0906\u092a\u0915\u0947 \u0932\u093f\u090f \u090f\u0915 \u092c\u0947\u0939\u0924\u0930\u0940\u0928 earning opportunity \u0939\u0948\u0964",
+        "timestamp": "2026-04-25T18:05:34.269080",
+        "metadata": {
+          "state": "GREETING"
+        }
+      }
+    ],
+    "language": "hindi",
+    "detected_languages": [
+      "hindi"
+    ],
+    "objections_raised": [],
+    "objections_resolved": [],
+    "sentiment_timeline": [],
+    "score": 0,
+    "score_label": "unscored",
+    "state": "END",
+    "summary": {
+      "score": 0,
+      "label": "cold",
+      "interest_level": 35,
+      "readiness": 0,
+      "network_signal": 50,
+      "engagement_quality": 0,
+      "objections_detected": [],
+      "objections_resolved": [],
+      "buying_signals": [],
+      "rejection_signals": [],
+      "total_exchanges": 0,
+      "reasoning": "Low engagement or rejection signals present. Recommend cold nurture sequence.",
+      "summary": {
+        "headline": "Rajesh Kumar \u2014 COLD lead",
+        "what_worked": "Agent pitched key benefits and handled objections",
+        "key_moments": [
+          "Opening pitch delivered",
+          "Benefits explained"
+        ],
+        "objections_handled": [],
+        "lead_sentiment": "neutral",
+        "final_state": "needs_follow_up",
+        "recommended_action": "Send WhatsApp follow-up and schedule callback",
+        "whatsapp_message": "Hi Rajesh Kumar! Thanks for your time. Here's the Rupeezy partner sign-up link: rupeezy.in/partner"
+      }
+    }
+  }
+]
