@@ -1,33 +1,17 @@
-# ─── Netlify Configuration ────────────────────────────────────────────────────
-# This file tells Netlify how to build the project and handle routing.
-
 [build]
-  # The frontend folder is where package.json lives
-  base    = "frontend"
-  # Vite outputs built files here
-  publish = "dist"
-  # Build command
-  command = "npm run build"
+  command = "cd frontend && npm install && npm run build"
+  publish = "frontend/dist"
 
 [build.environment]
   NODE_VERSION = "18"
 
-# ─── Redirects ────────────────────────────────────────────────────────────────
-
-# 1. Proxy /api/* calls to your deployed backend.
-#    ⚠️  Replace the `to` URL below with your actual backend URL
-#    (e.g. from Render, Railway, Fly.io, etc.)
-#    Example: https://rupeezy-ai-backend.onrender.com/api/:splat
 [[redirects]]
-  from   = "/api/*"
-  to     = "https://rupeezy-ai-voice-rm.onrender.com/api/:splat"
+  from = "/api/*"
+  to = "https://rupeezy-ai-voice-rm.onrender.com/api/:splat"
   status = 200
-  force  = true
+  force = true
 
-# 2. SPA fallback — send all unmatched routes to index.html
-#    This fixes the "Page not found" error for client-side routes
-#    like /agent, /leads, /analytics, etc.
 [[redirects]]
-  from   = "/*"
-  to     = "/index.html"
+  from = "/*"
+  to = "/index.html"
   status = 200
