@@ -239,7 +239,7 @@ async def end_call(req: EndCallRequest):
     }
 
 
-def _get_action(label: str) -> Dict:
+def _get_action(label: str) -> dict:
     actions = {
         "hot": {
             "type": "rm_handoff",
