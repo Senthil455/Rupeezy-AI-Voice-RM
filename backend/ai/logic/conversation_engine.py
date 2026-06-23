@@ -6,11 +6,15 @@ Conversation state machine + LLM call logic
 import json
 import os
 import re
+import time
 import logging
 from typing import Dict, List, Optional, Tuple
 from groq import Groq
 
 logger = logging.getLogger("rupeezy.engine")
+
+MAX_RETRIES = 3
+RETRY_BASE_DELAY = 1.0
 
 from ai.prompts.agent_prompt import (
     SYSTEM_PROMPT, SCORING_PROMPT, SUMMARY_PROMPT,
@@ -46,6 +50,21 @@ class ConversationEngine:
         self.client = Groq(api_key=os.environ.get("GROQ_API_KEY", ""))
         self.model = "llama3-70b-8192"
     
+    def _llm_call_with_retry(self, **kwargs):
+        """Call LLM API with exponential backoff retry logic."""
+        last_error = None
+        for attempt in range(MAX_RETRIES):
+            try:
+                return self.client.chat.completions.create(**kwargs)
+            except Exception as e:
+                last_error = e
+                if attempt < MAX_RETRIES - 1:
+                    delay = RETRY_BASE_DELAY * (2 ** attempt)
+                    logger.warning("LLM call failed (attempt %d/%d), retrying in %.1fs: %s",
+                                   attempt + 1, MAX_RETRIES, delay, e)
+                    time.sleep(delay)
+        raise last_error
+    
     def get_opening_line(self, lead_name: str, language: str) -> str:
         """Get language-appropriate opening line"""
         template = OPENING_LINES.get(language.lower(), DEFAULT_OPENING)
@@ -60,7 +79,7 @@ class ConversationEngine:
         
         # LLM fallback for ambiguous cases
         try:
-            resp = self.client.chat.completions.create(
+            resp = self._llm_call_with_retry(
                 model=self.model,
                 messages=[{
                     "role": "user",
@@ -108,7 +127,7 @@ Remember: Respond ONLY in {language}. Keep it natural and conversational."""
         api_messages = build_conversation_messages(conversation_messages)
         
         try:
-            resp = self.client.chat.completions.create(
+            resp = self._llm_call_with_retry(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": full_system},
@@ -119,7 +138,8 @@ Remember: Respond ONLY in {language}. Keep it natural and conversational."""
 
             response_text = resp.choices[0].message.content.strip()
         except Exception as e:
-            logger.error("LLM response generation failed, using fallback: %s", e)
+            logger.error("LLM response generation failed after %d retries, using fallback: %s",
+                         MAX_RETRIES, e)
             response_text = self._get_fallback_response(language, current_state, lead_context)
         
         # Determine next state based on context
@@ -154,7 +174,7 @@ Remember: Respond ONLY in {language}. Keep it natural and conversational."""
         )
         
         try:
-            resp = self.client.chat.completions.create(
+            resp = self._llm_call_with_retry(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=600
@@ -166,7 +186,8 @@ Remember: Respond ONLY in {language}. Keep it natural and conversational."""
             return json.loads(raw)
             
         except Exception as e:
-            logger.error("LLM summary generation failed, using fallback: %s", e)
+            logger.error("LLM summary generation failed after %d retries, using fallback: %s",
+                         MAX_RETRIES, e)
             return {
                 "headline": f"{lead.get('name', 'Lead')} — {conversation.get('score_label', 'unscored').upper()} lead",
                 "what_worked": "Agent pitched key benefits and handled objections",
