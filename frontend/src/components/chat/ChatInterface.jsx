@@ -179,7 +179,12 @@ export default function ChatInterface({ lead, onCallEnd, onCallStart }) {
       return
     }
     const rec = new SpeechRecognition()
-    rec.lang = conv.language === 'hindi' ? 'hi-IN' : 'en-IN'
+    const langMap = {
+      hindi: 'hi-IN', english: 'en-IN', tamil: 'ta-IN',
+      telugu: 'te-IN', bengali: 'bn-IN', gujarati: 'gu-IN',
+      marathi: 'mr-IN', hinglish: 'en-IN'
+    }
+    rec.lang = langMap[conv.language] || 'en-IN'
     rec.continuous = false
     rec.interimResults = false
     rec.onresult = (e) => {
