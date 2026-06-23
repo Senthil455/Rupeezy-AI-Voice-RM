@@ -6,10 +6,13 @@ Simulates MongoDB collections using in-memory + JSON persistence
 import json
 import os
 import uuid
+import logging
 import portalocker
 from datetime import datetime
 from typing import Optional, List, Dict, Any, Callable
 from pathlib import Path
+
+logger = logging.getLogger("rupeezy.store")
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
@@ -27,19 +30,37 @@ def _lock_path(path: Path) -> Path:
 
 def _read_with_lock(path: Path) -> list:
     if not path.exists():
+        logger.warning("Data file does not exist, returning empty list: %s", path)
         return []
     lock = _lock_path(path)
-    with portalocker.Lock(lock, timeout=5, flags=portalocker.LOCK_EX):
-        return json.loads(path.read_text())
+    try:
+        with portalocker.Lock(lock, timeout=5, flags=portalocker.LOCK_EX):
+            return json.loads(path.read_text())
+    except json.JSONDecodeError as e:
+        logger.error("Corrupted JSON file %s: %s", path, e)
+        return []
+    except portalocker.LockException as e:
+        logger.error("Could not acquire lock for %s: %s", path, e)
+        return []
 
 
 def _transaction(path: Path, callback: Callable[[list], list]) -> list:
     lock = _lock_path(path)
-    with portalocker.Lock(lock, timeout=5, flags=portalocker.LOCK_EX):
-        data = json.loads(path.read_text()) if path.exists() else []
-        result = callback(data)
-        path.write_text(json.dumps(data, indent=2, default=str))
-        return result
+    try:
+        with portalocker.Lock(lock, timeout=5, flags=portalocker.LOCK_EX):
+            data = json.loads(path.read_text()) if path.exists() else []
+            result = callback(data)
+            path.write_text(json.dumps(data, indent=2, default=str))
+            return result
+    except json.JSONDecodeError as e:
+        logger.error("Corrupted JSON file during transaction on %s: %s", path, e)
+        raise
+    except portalocker.LockException as e:
+        logger.error("Could not acquire lock for transaction on %s: %s", path, e)
+        raise
+    except Exception as e:
+        logger.error("Unexpected error in transaction on %s: %s", path, e)
+        raise
 
 
 # ─────────────────────────────────────────

@@ -6,8 +6,11 @@ Conversation state machine + LLM call logic
 import json
 import os
 import re
+import logging
 from typing import Dict, List, Optional, Tuple
 from groq import Groq
+
+logger = logging.getLogger("rupeezy.engine")
 
 from ai.prompts.agent_prompt import (
     SYSTEM_PROMPT, SCORING_PROMPT, SUMMARY_PROMPT,
@@ -69,8 +72,8 @@ class ConversationEngine:
             detected = resp.choices[0].message.content.strip().lower()
             if detected in ["english", "hindi", "hinglish", "tamil", "telugu", "marathi", "bengali", "gujarati"]:
                 return detected
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("LLM language detection failed, falling back to heuristic: %s", e)
         
         return lang
     
@@ -116,7 +119,7 @@ Remember: Respond ONLY in {language}. Keep it natural and conversational."""
 
             response_text = resp.choices[0].message.content.strip()
         except Exception as e:
-            # Fallback response if API fails
+            logger.error("LLM response generation failed, using fallback: %s", e)
             response_text = self._get_fallback_response(language, current_state, lead_context)
         
         # Determine next state based on context
@@ -163,7 +166,7 @@ Remember: Respond ONLY in {language}. Keep it natural and conversational."""
             return json.loads(raw)
             
         except Exception as e:
-            # Fallback summary
+            logger.error("LLM summary generation failed, using fallback: %s", e)
             return {
                 "headline": f"{lead.get('name', 'Lead')} — {conversation.get('score_label', 'unscored').upper()} lead",
                 "what_worked": "Agent pitched key benefits and handled objections",

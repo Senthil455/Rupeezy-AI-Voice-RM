@@ -1,12 +1,20 @@
 """
-Rupeezy AI Voice RM — FastAPI Backend
+Rupeezy AI Voice RM -- FastAPI Backend
 Main application entry point
 """
 
 import os
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
+logger = logging.getLogger("rupeezy")
+logger.info("Starting Rupeezy AI Voice RM backend")
 
 from routes.leads import router as leads_router
 from routes.conversations import router as conv_router
