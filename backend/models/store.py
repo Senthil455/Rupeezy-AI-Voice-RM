@@ -78,6 +78,12 @@ def get_lead(lead_id: str) -> Optional[Dict]:
 
 def create_lead(data: Dict) -> Dict:
     def _create(leads: list) -> Dict:
+        phone = data.get("phone", "")
+        if phone:
+            existing = next((l for l in leads if l.get("phone") == phone), None)
+            if existing:
+                logger.info("Duplicate phone number %s, returning existing lead %s", phone, existing["id"])
+                return existing
         lead = {
             "id": str(uuid.uuid4())[:8].upper(),
             "created_at": datetime.now().isoformat(),
