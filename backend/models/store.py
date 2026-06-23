@@ -8,7 +8,7 @@ import os
 import uuid
 import portalocker
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Callable
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent.parent / "data"
@@ -25,23 +25,21 @@ def _lock_path(path: Path) -> Path:
     return path.parent / (path.name + LOCK_SUFFIX)
 
 
-def _read(path: Path) -> list:
+def _read_with_lock(path: Path) -> list:
     if not path.exists():
         return []
     lock = _lock_path(path)
-    try:
-        with portalocker.Lock(lock, timeout=5, flags=portalocker.LOCK_EX):
-            return json.loads(path.read_text())
-    except portalocker.LockException:
-        return []
-    except json.JSONDecodeError:
-        return []
+    with portalocker.Lock(lock, timeout=5, flags=portalocker.LOCK_EX):
+        return json.loads(path.read_text())
 
 
-def _write(path: Path, data: list):
+def _transaction(path: Path, callback: Callable[[list], list]) -> list:
     lock = _lock_path(path)
     with portalocker.Lock(lock, timeout=5, flags=portalocker.LOCK_EX):
+        data = json.loads(path.read_text()) if path.exists() else []
+        result = callback(data)
         path.write_text(json.dumps(data, indent=2, default=str))
+        return result
 
 
 # ─────────────────────────────────────────
@@ -49,39 +47,40 @@ def _write(path: Path, data: list):
 # ─────────────────────────────────────────
 
 def get_all_leads() -> List[Dict]:
-    return _read(LEADS_FILE)
+    return _read_with_lock(LEADS_FILE)
 
 
 def get_lead(lead_id: str) -> Optional[Dict]:
-    return next((l for l in _read(LEADS_FILE) if l["id"] == lead_id), None)
+    leads = _read_with_lock(LEADS_FILE)
+    return next((l for l in leads if l["id"] == lead_id), None)
 
 
 def create_lead(data: Dict) -> Dict:
-    leads = _read(LEADS_FILE)
-    lead = {
-        "id": str(uuid.uuid4())[:8].upper(),
-        "created_at": datetime.now().isoformat(),
-        "status": "new",          # new | calling | hot | warm | cold | converted
-        "score": 0,
-        "score_label": "unscored",
-        "call_count": 0,
-        "language": data.get("language", "unknown"),
-        "conversation_ids": [],
-        **data
-    }
-    leads.append(lead)
-    _write(LEADS_FILE, leads)
-    return lead
+    def _create(leads: list) -> Dict:
+        lead = {
+            "id": str(uuid.uuid4())[:8].upper(),
+            "created_at": datetime.now().isoformat(),
+            "status": "new",
+            "score": 0,
+            "score_label": "unscored",
+            "call_count": 0,
+            "language": data.get("language", "unknown"),
+            "conversation_ids": [],
+            **data
+        }
+        leads.append(lead)
+        return lead
+    return _transaction(LEADS_FILE, _create)
 
 
 def update_lead(lead_id: str, updates: Dict) -> Optional[Dict]:
-    leads = _read(LEADS_FILE)
-    for i, lead in enumerate(leads):
-        if lead["id"] == lead_id:
-            leads[i] = {**lead, **updates, "updated_at": datetime.now().isoformat()}
-            _write(LEADS_FILE, leads)
-            return leads[i]
-    return None
+    def _update(leads: list) -> Optional[Dict]:
+        for i, lead in enumerate(leads):
+            if lead["id"] == lead_id:
+                leads[i] = {**lead, **updates, "updated_at": datetime.now().isoformat()}
+                return leads[i]
+        return None
+    return _transaction(LEADS_FILE, _update)
 
 
 def bulk_create_leads(leads_data: List[Dict]) -> List[Dict]:
@@ -93,80 +92,82 @@ def bulk_create_leads(leads_data: List[Dict]) -> List[Dict]:
 # ─────────────────────────────────────────
 
 def get_conversation(conv_id: str) -> Optional[Dict]:
-    return next((c for c in _read(CONVERSATIONS_FILE) if c["id"] == conv_id), None)
+    convs = _read_with_lock(CONVERSATIONS_FILE)
+    return next((c for c in convs if c["id"] == conv_id), None)
 
 
 def get_lead_conversations(lead_id: str) -> List[Dict]:
-    return [c for c in _read(CONVERSATIONS_FILE) if c["lead_id"] == lead_id]
+    convs = _read_with_lock(CONVERSATIONS_FILE)
+    return [c for c in convs if c["lead_id"] == lead_id]
 
 
 def create_conversation(lead_id: str) -> Dict:
-    convs = _read(CONVERSATIONS_FILE)
-    conv = {
-        "id": str(uuid.uuid4())[:12],
-        "lead_id": lead_id,
-        "started_at": datetime.now().isoformat(),
-        "ended_at": None,
-        "duration_seconds": 0,
-        "messages": [],
-        "language": "unknown",
-        "detected_languages": [],
-        "objections_raised": [],
-        "objections_resolved": [],
-        "sentiment_timeline": [],
-        "score": 0,
-        "score_label": "unscored",
-        "state": "INIT",   # conversation state machine state
-        "summary": None,
-    }
-    convs.append(conv)
-    _write(CONVERSATIONS_FILE, convs)
-    return conv
+    def _create(convs: list) -> Dict:
+        conv = {
+            "id": str(uuid.uuid4())[:12],
+            "lead_id": lead_id,
+            "started_at": datetime.now().isoformat(),
+            "ended_at": None,
+            "duration_seconds": 0,
+            "messages": [],
+            "language": "unknown",
+            "detected_languages": [],
+            "objections_raised": [],
+            "objections_resolved": [],
+            "sentiment_timeline": [],
+            "score": 0,
+            "score_label": "unscored",
+            "state": "INIT",
+            "summary": None,
+        }
+        convs.append(conv)
+        return conv
+    return _transaction(CONVERSATIONS_FILE, _create)
 
 
 def add_message(conv_id: str, role: str, content: str, metadata: Dict = None) -> Optional[Dict]:
-    convs = _read(CONVERSATIONS_FILE)
-    for i, conv in enumerate(convs):
-        if conv["id"] == conv_id:
-            msg = {
-                "id": str(uuid.uuid4())[:8],
-                "role": role,           # agent | user
-                "content": content,
-                "timestamp": datetime.now().isoformat(),
-                "metadata": metadata or {}
-            }
-            convs[i]["messages"].append(msg)
-            _write(CONVERSATIONS_FILE, convs)
-            return convs[i]
-    return None
+    def _add(convs: list) -> Optional[Dict]:
+        for i, conv in enumerate(convs):
+            if conv["id"] == conv_id:
+                msg = {
+                    "id": str(uuid.uuid4())[:8],
+                    "role": role,
+                    "content": content,
+                    "timestamp": datetime.now().isoformat(),
+                    "metadata": metadata or {}
+                }
+                convs[i]["messages"].append(msg)
+                return convs[i]
+        return None
+    return _transaction(CONVERSATIONS_FILE, _add)
 
 
 def update_conversation(conv_id: str, updates: Dict) -> Optional[Dict]:
-    convs = _read(CONVERSATIONS_FILE)
-    for i, conv in enumerate(convs):
-        if conv["id"] == conv_id:
-            convs[i] = {**conv, **updates}
-            _write(CONVERSATIONS_FILE, convs)
-            return convs[i]
-    return None
+    def _update(convs: list) -> Optional[Dict]:
+        for i, conv in enumerate(convs):
+            if conv["id"] == conv_id:
+                convs[i] = {**conv, **updates}
+                return convs[i]
+        return None
+    return _transaction(CONVERSATIONS_FILE, _update)
 
 
 def end_conversation(conv_id: str, summary: Dict) -> Optional[Dict]:
-    convs = _read(CONVERSATIONS_FILE)
-    for i, conv in enumerate(convs):
-        if conv["id"] == conv_id:
-            started = datetime.fromisoformat(conv["started_at"])
-            ended = datetime.now()
-            duration = int((ended - started).total_seconds())
-            convs[i].update({
-                "ended_at": ended.isoformat(),
-                "duration_seconds": duration,
-                "summary": summary,
-                "state": "END"
-            })
-            _write(CONVERSATIONS_FILE, convs)
-            return convs[i]
-    return None
+    def _end(convs: list) -> Optional[Dict]:
+        for i, conv in enumerate(convs):
+            if conv["id"] == conv_id:
+                started = datetime.fromisoformat(conv["started_at"])
+                ended = datetime.now()
+                duration = int((ended - started).total_seconds())
+                convs[i].update({
+                    "ended_at": ended.isoformat(),
+                    "duration_seconds": duration,
+                    "summary": summary,
+                    "state": "END"
+                })
+                return convs[i]
+        return None
+    return _transaction(CONVERSATIONS_FILE, _end)
 
 
 # ─────────────────────────────────────────
@@ -174,8 +175,8 @@ def end_conversation(conv_id: str, summary: Dict) -> Optional[Dict]:
 # ─────────────────────────────────────────
 
 def get_analytics_snapshot() -> Dict:
-    leads = _read(LEADS_FILE)
-    convs = _read(CONVERSATIONS_FILE)
+    leads = _read_with_lock(LEADS_FILE)
+    convs = _read_with_lock(CONVERSATIONS_FILE)
     
     total = len(leads)
     hot = sum(1 for l in leads if l.get("score_label") == "hot")
