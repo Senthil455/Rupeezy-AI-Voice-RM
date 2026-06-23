@@ -22,6 +22,17 @@ class LeadCreate(BaseModel):
 class BulkLeadCreate(BaseModel):
     leads: List[LeadCreate]
 
+class LeadUpdate(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    language: Optional[str] = None
+    type: Optional[str] = None
+    city: Optional[str] = None
+    network_size: Optional[str] = None
+    source: Optional[str] = None
+    status: Optional[str] = None
+
 @router.get("/")
 def list_leads(status: Optional[str] = None, limit: int = 100):
     leads = get_all_leads()
@@ -89,8 +100,11 @@ def seed_mock_leads():
     return {"message": f"Seeded {len(created)} leads", "count": len(created)}
 
 @router.patch("/{lead_id}")
-def patch_lead(lead_id: str, updates: dict):
-    updated = update_lead(lead_id, updates)
+def patch_lead(lead_id: str, updates: LeadUpdate):
+    filtered = {k: v for k, v in updates.model_dump().items() if v is not None}
+    if not filtered:
+        raise HTTPException(400, "No valid fields provided for update")
+    updated = update_lead(lead_id, filtered)
     if not updated:
         raise HTTPException(404, "Lead not found")
     return updated
