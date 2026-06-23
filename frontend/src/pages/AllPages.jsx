@@ -738,11 +738,11 @@ export function Settings() {
           title: 'API Configuration',
           fields: [
             { label: 'LLM Model', key: 'llm', type: 'select', options: [
-              {v:'claude-sonnet',l:'Claude Sonnet (Recommended)'},
-              {v:'claude-opus',l:'Claude Opus (Higher quality)'},
-              {v:'gpt-4o',l:'GPT-4o'},
+              {v:'llama3-70b-8192',l:'Llama 3 70B (Groq - Recommended)'},
+              {v:'llama3-8b-8192',l:'Llama 3 8B (Groq - Faster)'},
+              {v:'mixtral-8x7b-32768',l:'Mixtral 8x7B (Groq)'},
             ]},
-            { label: 'Anthropic API Key', key: 'apiKey', type: 'password' },
+            { label: 'Groq API Key', key: 'apiKey', type: 'password' },
           ]
         },
         {
@@ -803,7 +803,7 @@ export function Settings() {
       <div className="card">
         <div className="section-label">Integration Status</div>
         {[
-          ['LLM (Claude)', true],
+          ['LLM (Groq / Llama 3)', true],
           ['STT (Whisper / Web Speech API)', true],
           ['TTS (Browser / ElevenLabs)', true],
           ['WhatsApp Business API', false],
