@@ -200,15 +200,30 @@ Remember: Respond ONLY in {language}. Keep it natural and conversational."""
             }
     
     def _advance_state(self, current_state: str, messages: List[Dict]) -> str:
-        """Advance conversation state based on message count and content"""
+        """Advance conversation state based on message count and sentiment signals"""
         user_msgs = [m for m in messages if m["role"] == "user"]
         count = len(user_msgs)
+        
+        # Analyze recent messages for sentiment signals
+        all_cold = []
+        all_hot = []
+        for msg in user_msgs[-3:]:
+            analysis = scorer.analyze_message(msg["content"])
+            all_cold.extend(analysis["cold_signals"])
+            all_hot.extend(analysis["hot_signals"])
+        
+        # Strong rejection: skip to END regardless of count
+        if all_cold and count >= 2:
+            return "END"
+        
+        # High engagement: stay in QUALIFICATION longer
+        qual_threshold = 7 if len(all_hot) >= 2 else 5
         
         state_map = {
             "INIT": "GREETING",
             "GREETING": "PITCH" if count >= 1 else "GREETING",
             "PITCH": "QUALIFICATION" if count >= 3 else "PITCH",
-            "QUALIFICATION": "OBJECTION_HANDLING" if count >= 5 else "QUALIFICATION",
+            "QUALIFICATION": "OBJECTION_HANDLING" if count >= qual_threshold else "QUALIFICATION",
             "OBJECTION_HANDLING": "CLOSING" if count >= 7 else "OBJECTION_HANDLING",
             "CLOSING": "END" if count >= 9 else "CLOSING",
             "END": "END"
