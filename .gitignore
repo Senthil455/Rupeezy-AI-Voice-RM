@@ -22,7 +22,7 @@ frontend/.env.test.local
 # Keep .env.example and .env.production (no secrets)
 
 # ── Docker ───────────────────────────────────────────────────────────────────
-*.dockerignore
+# .dockerignore files are tracked as they are needed for Docker builds
 
 # ── OS ───────────────────────────────────────────────────────────────────────
 .DS_Store
