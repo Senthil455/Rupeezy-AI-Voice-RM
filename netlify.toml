@@ -5,11 +5,10 @@
 [build.environment]
   NODE_VERSION = "18"
 
-[[redirects]]
-  from = "/api/*"
-  to = "https://rupeezy-ai-voice-rm.onrender.com/api/:splat"
-  status = 200
-  force = true
+# API proxy redirect must be configured in Netlify Dashboard
+# Site Settings > Build & deploy > Redirects and rewrites
+# Add rule: /api/*  https://YOUR-BACKEND.onrender.com/api/:splat  200
+# The backend URL varies per deploy and cannot be hardcoded here.
 
 [[redirects]]
   from = "/*"
