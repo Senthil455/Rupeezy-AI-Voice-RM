@@ -2,7 +2,7 @@
 routes/analytics.py
 """
 from fastapi import APIRouter
-from models.store import get_analytics_snapshot, get_all_leads, _read, CONVERSATIONS_FILE
+from models.store import get_analytics_snapshot, get_all_leads, get_all_conversations
 from datetime import datetime, timedelta
 
 router = APIRouter()

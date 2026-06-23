@@ -122,6 +122,10 @@ def get_lead_conversations(lead_id: str) -> List[Dict]:
     return [c for c in convs if c["lead_id"] == lead_id]
 
 
+def get_all_conversations() -> List[Dict]:
+    return _read_with_lock(CONVERSATIONS_FILE)
+
+
 def create_conversation(lead_id: str) -> Dict:
     def _create(convs: list) -> Dict:
         conv = {
