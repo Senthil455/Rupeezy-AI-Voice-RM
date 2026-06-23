@@ -2,7 +2,7 @@
 routes/conversations.py
 """
 from fastapi import APIRouter, HTTPException
-from models.store import get_conversation, get_lead_conversations, _read, CONVERSATIONS_FILE
+from models.store import get_conversation, get_lead_conversations, get_all_conversations
 
 router = APIRouter()
 
@@ -19,5 +19,5 @@ def get_for_lead(lead_id: str):
 
 @router.get("/")
 def list_all(limit: int = 50):
-    convs = _read(CONVERSATIONS_FILE)
+    convs = get_all_conversations()
     return {"conversations": convs[:limit], "total": len(convs)}
