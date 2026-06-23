@@ -372,8 +372,6 @@ export function Analytics() {
     {day:'Apr 19', rate:30}, {day:'Apr 20', rate:31}, {day:'Apr 21', rate:33}, {day:'Apr 22', rate:34.2}
   ]
 
-  const { analyticsApi: aApi } = { analyticsApi: { snapshot: () => Promise.resolve(snap), funnel: () => Promise.resolve({stages:funnel}) } }
-
   return (
     <div className="space-y-6 animate-fade-in">
       <h2 className="font-display font-bold text-xl">Analytics</h2>
