@@ -703,19 +703,29 @@ export function ObjectionBank() {
 // src/pages/Settings.jsx
 export function Settings() {
   const [saved, setSaved] = useState(false)
-  const [config, setConfig] = useState({
-    agentName: 'Priya',
-    tone: 'professional_friendly',
-    hotThreshold: 75,
-    warmThreshold: 45,
-    autoWhatsApp: true,
-    callSchedule: 'always',
-    maxAttempts: 3,
-    llm: 'claude-sonnet',
-    apiKey: '',
+  const [config, setConfig] = useState(() => {
+    try {
+      const stored = localStorage.getItem('rupeezy_settings')
+      if (stored) return JSON.parse(stored)
+    } catch (e) { /* ignore */ }
+    return {
+      agentName: 'Priya',
+      tone: 'professional_friendly',
+      hotThreshold: 75,
+      warmThreshold: 45,
+      autoWhatsApp: true,
+      callSchedule: 'always',
+      maxAttempts: 3,
+      llm: 'llama3-70b-8192',
+      apiKey: '',
+    }
   })
 
-  const save = () => { setSaved(true); setTimeout(() => setSaved(false), 2000) }
+  const save = () => {
+    localStorage.setItem('rupeezy_settings', JSON.stringify(config))
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
 
   return (
     <div className="space-y-6 animate-fade-in max-w-2xl">
