@@ -6,6 +6,7 @@ Simulates MongoDB collections using in-memory + JSON persistence
 import json
 import os
 import uuid
+import portalocker
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pathlib import Path
@@ -17,18 +18,30 @@ LEADS_FILE = DATA_DIR / "leads.json"
 CONVERSATIONS_FILE = DATA_DIR / "conversations.json"
 SUMMARIES_FILE = DATA_DIR / "summaries.json"
 
+LOCK_SUFFIX = ".lock"
+
+
+def _lock_path(path: Path) -> Path:
+    return path.parent / (path.name + LOCK_SUFFIX)
+
 
 def _read(path: Path) -> list:
     if not path.exists():
         return []
+    lock = _lock_path(path)
     try:
-        return json.loads(path.read_text())
-    except Exception:
+        with portalocker.Lock(lock, timeout=5, flags=portalocker.LOCK_EX):
+            return json.loads(path.read_text())
+    except portalocker.LockException:
+        return []
+    except json.JSONDecodeError:
         return []
 
 
 def _write(path: Path, data: list):
-    path.write_text(json.dumps(data, indent=2, default=str))
+    lock = _lock_path(path)
+    with portalocker.Lock(lock, timeout=5, flags=portalocker.LOCK_EX):
+        path.write_text(json.dumps(data, indent=2, default=str))
 
 
 # ─────────────────────────────────────────
