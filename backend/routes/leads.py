@@ -38,11 +38,11 @@ def get_single_lead(lead_id: str):
 
 @router.post("/")
 def create_single_lead(data: LeadCreate):
-    return create_lead(data.dict())
+    return create_lead(data.model_dump())
 
 @router.post("/bulk")
 def create_bulk_leads(data: BulkLeadCreate):
-    created = bulk_create_leads([l.dict() for l in data.leads])
+    created = bulk_create_leads([l.model_dump() for l in data.leads])
     return {"created": len(created), "leads": created}
 
 @router.post("/seed")
