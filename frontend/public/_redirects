@@ -1,5 +1,0 @@
-# Proxy all /api/* calls to the backend (replace YOUR_BACKEND_URL)
-/api/*  https://rupeezy-ai-voice-rm.onrender.com/api/:splat  200
-
-# SPA fallback — fixes 404 on page refresh for all client-side routes
-/*  /index.html  200
