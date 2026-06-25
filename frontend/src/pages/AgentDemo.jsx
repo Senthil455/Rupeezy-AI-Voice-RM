@@ -1,8 +1,8 @@
-// src/pages/AgentDemo.jsx
 import { useState, useEffect } from 'react'
 import { leadsApi } from '../services/api.js'
 import ChatInterface from '../components/chat/ChatInterface.jsx'
 import { LeadBadge } from '../components/shared/index.jsx'
+import { Plus, RefreshCcw } from 'lucide-react'
 
 const LANGUAGES = ['english', 'hindi', 'hinglish', 'tamil', 'telugu', 'marathi', 'bengali', 'gujarati']
 const LEAD_TYPES = ['MFD', 'Financial Advisor', 'Insurance Agent', 'Finance Influencer']
@@ -35,7 +35,6 @@ export function AgentDemo() {
 
   const handleCallEnd = (result) => {
     setCallResult(result)
-    // Update lead in list
     setLeads(prev => prev.map(l => l.id === selectedLead?.id
       ? { ...l, status: result.score?.label, score: result.score?.score, score_label: result.score?.label }
       : l
@@ -51,17 +50,18 @@ export function AgentDemo() {
         </div>
         <div className="flex gap-2">
           <button onClick={() => setCustomMode(!customMode)} className="btn-ghost text-sm">
-            {customMode ? '← Cancel' : '+ Custom Lead'}
+            <Plus size={14} />
+            {customMode ? 'Cancel' : 'Custom Lead'}
           </button>
           <button onClick={async () => { await leadsApi.seed(); const d = await leadsApi.getAll(); setLeads(d.leads || []) }}
             className="btn-ghost text-sm">
-            🌱 Seed Leads
+            <RefreshCcw size={14} />
+            Seed Leads
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-5">
-        {/* Lead selector / custom form */}
         <div className="space-y-3">
           {customMode ? (
             <div className="card space-y-3">
@@ -96,7 +96,7 @@ export function AgentDemo() {
                 </select>
               </div>
               <button onClick={handleCreateCustom} disabled={creating} className="btn-primary w-full mt-2">
-                {creating ? 'Creating...' : '▶ Start with this lead'}
+                {creating ? 'Creating...' : 'Start with this lead'}
               </button>
             </div>
           ) : (
@@ -112,7 +112,7 @@ export function AgentDemo() {
                     <button
                       key={lead.id}
                       onClick={() => { setSelectedLead(lead); setCallResult(null) }}
-                      className={`w-full text-left p-3 rounded-xl border transition-all text-sm ${
+                      className={`w-full text-left p-3 rounded-lg border transition-all text-sm ${
                         selectedLead?.id === lead.id
                           ? 'bg-accent/10 border-accent/30 text-white'
                           : 'bg-white/[0.02] border-white/[0.05] text-slate-300 hover:bg-white/[0.04] hover:border-white/[0.08]'
@@ -132,7 +132,6 @@ export function AgentDemo() {
             </div>
           )}
 
-          {/* Selected lead info */}
           {selectedLead && (
             <div className="card">
               <div className="section-label">Selected Lead</div>
@@ -161,12 +160,11 @@ export function AgentDemo() {
             </div>
           )}
 
-          {/* Call result */}
           {callResult && (
             <div className={`card border ${
-              callResult.lead_status === 'hot' ? 'border-red-500/30 bg-red-500/5' :
-              callResult.lead_status === 'warm' ? 'border-amber-500/30 bg-amber-500/5' :
-              'border-teal-500/30 bg-teal-500/5'
+              callResult.lead_status === 'hot' ? 'border-red-500/30' :
+              callResult.lead_status === 'warm' ? 'border-amber-500/30' :
+              'border-teal-500/30'
             }`}>
               <div className="section-label">Call Complete</div>
               <div className="text-sm space-y-2">
@@ -180,7 +178,6 @@ export function AgentDemo() {
           )}
         </div>
 
-        {/* Chat Interface */}
         <div className="col-span-2">
           <ChatInterface
             lead={selectedLead}

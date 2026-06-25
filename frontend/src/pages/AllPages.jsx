@@ -1,8 +1,8 @@
-// src/pages/LeadPipeline.jsx
 import { useState, useEffect } from 'react'
-import { leadsApi, conversationsApi } from '../services/api.js'
+import { leadsApi, conversationsApi, analyticsApi } from '../services/api.js'
 import { LeadBadge, ScoreRing } from '../components/shared/index.jsx'
-import { Search, Filter, Phone } from 'lucide-react'
+import { Search, Phone, Upload as UploadIcon, Database, FileText, Download, Plus } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid } from 'recharts'
 
 export function LeadPipeline() {
   const [leads, setLeads] = useState([])
@@ -30,10 +30,10 @@ export function LeadPipeline() {
 
   const tabs = [
     { key: 'all', label: `All (${leads.length})` },
-    { key: 'hot', label: `🔥 Hot (${leads.filter(l=>l.status==='hot').length})` },
-    { key: 'warm', label: `🌡 Warm (${leads.filter(l=>l.status==='warm').length})` },
-    { key: 'cold', label: `❄ Cold (${leads.filter(l=>l.status==='cold').length})` },
-    { key: 'new', label: `✨ New (${leads.filter(l=>l.status==='new').length})` },
+    { key: 'hot', label: `Hot (${leads.filter(l=>l.status==='hot').length})` },
+    { key: 'warm', label: `Warm (${leads.filter(l=>l.status==='warm').length})` },
+    { key: 'cold', label: `Cold (${leads.filter(l=>l.status==='cold').length})` },
+    { key: 'new', label: `New (${leads.filter(l=>l.status==='new').length})` },
   ]
 
   return (
@@ -51,63 +51,69 @@ export function LeadPipeline() {
             />
           </div>
           <button onClick={async () => { await leadsApi.seed(); const d = await leadsApi.getAll(); setLeads(d.leads || []) }}
-            className="btn-ghost text-sm">+ Seed Leads</button>
+            className="btn-ghost text-sm">
+            <Database size={14} />
+            Seed Leads
+          </button>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1.5 bg-panel p-1 rounded-xl w-fit">
+      <div className="flex gap-1.5 bg-panel p-1 rounded-lg w-fit border border-white/[0.06]">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setFilter(t.key)}
-            className={`px-4 py-1.5 rounded-lg text-sm transition-all ${filter === t.key ? 'bg-white/[0.08] text-white font-medium' : 'text-slate-400 hover:text-slate-200'}`}>
+            className={`px-4 py-1.5 rounded-lg text-sm transition-all ${filter === t.key ? 'bg-elevated text-white font-medium shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>
             {t.label}
           </button>
         ))}
       </div>
 
       <div className="grid grid-cols-3 gap-5">
-        {/* Table */}
         <div className="col-span-2 card p-0 overflow-hidden">
           {loading ? (
-            <div className="py-12 text-center text-slate-500">Loading...</div>
+            <div className="py-12 text-center text-slate-500 text-sm">Loading...</div>
           ) : filtered.length === 0 ? (
-            <div className="py-12 text-center text-slate-500">No leads found</div>
+            <div className="py-12 text-center text-slate-500 text-sm">No leads found</div>
           ) : (
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-white/[0.06]">
-                  {['Lead', 'Type', 'Language', 'Score', 'Status', 'Calls', ''].map(h => (
-                    <th key={h} className="text-left text-xs text-slate-500 p-4 font-medium uppercase tracking-wide">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map(lead => (
-                  <tr key={lead.id}
-                    onClick={() => setSelected(lead)}
-                    className={`border-b border-white/[0.04] cursor-pointer hover:bg-white/[0.02] transition-colors ${selected?.id === lead.id ? 'bg-accent/5' : ''}`}>
-                    <td className="p-4">
-                      <div className="font-medium text-sm">{lead.name}</div>
-                      <div className="text-xs text-slate-500">{lead.id}</div>
-                    </td>
-                    <td className="p-4 text-xs text-slate-400">{lead.type}</td>
-                    <td className="p-4"><span className="text-xs bg-white/[0.05] px-2 py-1 rounded">{lead.language}</span></td>
-                    <td className="p-4">
-                      <ScoreRing score={lead.score || 0} label={lead.score_label || 'new'} size={40} />
-                    </td>
-                    <td className="p-4"><LeadBadge label={lead.status} /></td>
-                    <td className="p-4 text-sm text-slate-400">{lead.call_count || 0}</td>
-                    <td className="p-4">
-                      <a href="/agent" className="text-xs text-accent hover:text-blue-300">Call →</a>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/[0.06]">
+                    {['Lead', 'Type', 'Language', 'Score', 'Status', 'Calls', ''].map(h => (
+                      <th key={h} className="text-left text-xs font-medium text-slate-500 p-4 whitespace-nowrap uppercase tracking-wide">{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filtered.map(lead => (
+                    <tr key={lead.id}
+                      onClick={() => setSelected(lead)}
+                      className={`border-b border-white/[0.03] last:border-0 cursor-pointer hover:bg-white/[0.015] transition-colors ${selected?.id === lead.id ? 'bg-accent/[0.03]' : ''}`}>
+                      <td className="p-4">
+                        <div className="font-medium text-sm">{lead.name}</div>
+                        <div className="text-xs text-slate-500 mt-0.5">{lead.id}</div>
+                      </td>
+                      <td className="p-4 text-xs text-slate-400">{lead.type}</td>
+                      <td className="p-4">
+                        <span className="text-xs bg-white/[0.04] px-2 py-1 rounded text-slate-400">{lead.language}</span>
+                      </td>
+                      <td className="p-4">
+                        <ScoreRing score={lead.score || 0} label={lead.score_label || 'new'} size={40} />
+                      </td>
+                      <td className="p-4"><LeadBadge label={lead.status} /></td>
+                      <td className="p-4 text-sm text-slate-400">{lead.call_count || 0}</td>
+                      <td className="p-4">
+                        <a href="/agent" className="text-xs text-accent hover:text-blue-300 transition-colors">
+                          Call &rarr;
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
-        {/* Lead detail */}
         <div>
           {selected ? (
             <div className="card space-y-4">
@@ -126,35 +132,34 @@ export function LeadPipeline() {
                   ['Calls Made', selected.call_count || 0],
                   ['Score', selected.score || '—'],
                 ].map(([k, v]) => (
-                  <div key={k} className="flex justify-between text-sm">
+                  <div key={k} className="flex justify-between text-sm py-0.5">
                     <span className="text-slate-400">{k}</span>
                     <span className="text-right">{v}</span>
                   </div>
                 ))}
               </div>
               {selected.last_call_summary && (
-                <div className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06]">
+                <div className="rounded-lg p-3 border" style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'var(--color-border)' }}>
                   <div className="text-xs text-slate-500 mb-1">Last Call Summary</div>
                   <div className="text-sm text-slate-300">{selected.last_call_summary}</div>
                 </div>
               )}
               {selected.recommended_action && (
-                <div className="bg-success/5 border border-success/20 rounded-xl p-3">
+                <div className="rounded-lg p-3" style={{ background: 'rgba(76, 217, 123, 0.06)', border: '1px solid rgba(76, 217, 123, 0.15)' }}>
                   <div className="text-xs text-slate-500 mb-1">Recommended Action</div>
                   <div className="text-sm text-slate-200">{selected.recommended_action}</div>
                 </div>
               )}
-              {/* Conversation history */}
               {convs.length > 0 && (
                 <div>
                   <div className="section-label">Call History ({convs.length})</div>
                   {convs.map(c => (
-                    <div key={c.id} className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06] mb-2">
+                    <div key={c.id} className="rounded-lg p-3 border mb-2 text-sm" style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'var(--color-border)' }}>
                       <div className="flex justify-between text-xs text-slate-400">
                         <span>{new Date(c.started_at).toLocaleDateString()}</span>
                         <span>{Math.floor(c.duration_seconds/60)}m {c.duration_seconds%60}s</span>
                       </div>
-                      <div className="text-sm mt-1">{c.messages?.length || 0} messages · {c.language}</div>
+                      <div className="text-xs text-slate-500 mt-1">{c.messages?.length || 0} messages · {c.language}</div>
                     </div>
                   ))}
                 </div>
@@ -175,12 +180,10 @@ export function LeadPipeline() {
   )
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// src/pages/Upload.jsx
 export function Upload() {
   const [file, setFile] = useState(null)
   const [progress, setProgress] = useState(0)
-  const [status, setStatus] = useState('idle') // idle | uploading | done | error
+  const [status, setStatus] = useState('idle')
   const [result, setResult] = useState(null)
   const [manual, setManual] = useState({ name:'', phone:'', email:'', language:'english', type:'MFD', city:'', network_size:'50-100', source:'manual' })
 
@@ -192,7 +195,6 @@ export function Upload() {
     setStatus('uploading')
     setProgress(0)
 
-    // Simulate CSV parse + upload
     const reader = new FileReader()
     reader.onload = async (ev) => {
       try {
@@ -211,7 +213,6 @@ export function Upload() {
           source: 'csv_upload'
         }))
 
-        // Simulate progress
         for (let i = 0; i <= 100; i += 10) {
           await new Promise(r => setTimeout(r, 60))
           setProgress(i)
@@ -254,18 +255,19 @@ export function Upload() {
 
       <div className="grid grid-cols-2 gap-6">
         <div className="space-y-5">
-          {/* Drop zone */}
           <div className="card">
             <div className="section-label">CSV Upload</div>
             <div
               onDrop={handleFileDrop}
               onDragOver={e => e.preventDefault()}
               onClick={() => document.getElementById('csv-input').click()}
-              className="border-2 border-dashed border-white/[0.1] hover:border-accent/50 rounded-2xl p-10 text-center cursor-pointer transition-colors"
+              className="border-2 border-dashed border-white/[0.1] hover:border-accent/50 rounded-xl p-10 text-center cursor-pointer transition-all duration-200"
             >
-              <div className="text-4xl mb-3">📋</div>
+              <div className="w-12 h-12 rounded-xl bg-accent/10 mx-auto mb-4 flex items-center justify-center">
+                <UploadIcon size={24} className="text-accent" />
+              </div>
               <div className="text-sm text-slate-300 mb-1">Drop CSV file here or click to browse</div>
-              <div className="text-xs text-slate-500">Required columns: name, phone · Optional: language, type, city</div>
+              <div className="text-xs text-slate-500">Required columns: name, phone</div>
               <input id="csv-input" type="file" accept=".csv" className="hidden" onChange={handleFileDrop} />
             </div>
 
@@ -274,35 +276,34 @@ export function Upload() {
                 <div className="flex justify-between text-xs text-slate-400 mb-2">
                   <span>Processing...</span><span>{progress}%</span>
                 </div>
-                <div className="bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
-                  <div className="h-full bg-accent rounded-full transition-all" style={{ width: `${progress}%` }} />
+                <div className="rounded-full h-1.5 overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                  <div className="h-full rounded-full bg-accent transition-all duration-300" style={{ width: `${progress}%` }} />
                 </div>
               </div>
             )}
-            {status === 'done' && (
-              <div className="mt-4 bg-success/10 border border-success/20 text-success text-sm rounded-xl p-3">
-                ✅ {result?.created || result?.count || 1} leads imported and queued for calling!
+            {status === 'done' && result && (
+              <div className="mt-4 rounded-lg p-3 text-sm text-success" style={{ background: 'rgba(76, 217, 123, 0.1)', border: '1px solid rgba(76, 217, 123, 0.2)' }}>
+                {result?.created || result?.count || 1} leads imported and queued for calling!
               </div>
             )}
             {status === 'error' && (
-              <div className="mt-4 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl p-3">
-                ❌ Upload failed. Check your CSV format.
+              <div className="mt-4 rounded-lg p-3 text-sm text-red-400" style={{ background: 'rgba(255, 92, 92, 0.1)', border: '1px solid rgba(255, 92, 92, 0.2)' }}>
+                Upload failed. Check your CSV format.
               </div>
             )}
           </div>
 
-          {/* Quick seed */}
           <div className="card">
             <div className="section-label">Demo Data</div>
             <p className="text-sm text-slate-400 mb-3">Instantly add 20 realistic Indian leads across all languages for demo.</p>
             <button onClick={handleSeed} className="btn-primary w-full">
-              🌱 Seed 20 Demo Leads
+              <Database size={14} />
+              Seed 20 Demo Leads
             </button>
           </div>
         </div>
 
         <div className="space-y-5">
-          {/* Manual entry */}
           <div className="card">
             <div className="section-label">Add Single Lead</div>
             <div className="space-y-3">
@@ -326,18 +327,20 @@ export function Upload() {
                   </select>
                 </div>
               </div>
-              <button onClick={handleManualAdd} className="btn-primary w-full mt-1">Add Lead →</button>
+              <button onClick={handleManualAdd} className="btn-primary w-full mt-1">
+                <Plus size={14} />
+                Add Lead
+              </button>
             </div>
           </div>
 
-          {/* CSV format guide */}
           <div className="card">
             <div className="section-label">CSV Format Guide</div>
             <div className="text-xs text-slate-400 space-y-1">
               <div>Required: <span className="text-accent">name</span>, <span className="text-accent">phone</span></div>
               <div>Optional: <span className="text-slate-300">email, language, type, city, network_size, source</span></div>
             </div>
-            <pre className="mt-3 bg-white/[0.03] rounded-xl p-3 text-xs text-slate-400 overflow-x-auto">
+            <pre className="mt-3 rounded-lg p-3 text-xs text-slate-400 overflow-x-auto" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--color-border)' }}>
 {`name,phone,email,language,type
 Rajesh Kumar,+919876543210,r@email.com,hindi,MFD
 Priya Shah,+919123456789,p@email.com,english,FA`}
@@ -348,10 +351,6 @@ Priya Shah,+919123456789,p@email.com,english,FA`}
     </div>
   )
 }
-
-// ──────────────────────────────────────────────────────────────────────────────
-// src/pages/Analytics.jsx
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid } from 'recharts'
 
 export function Analytics() {
   const [snap, setSnap] = useState(null)
@@ -366,7 +365,6 @@ export function Analytics() {
   const langData = Object.entries(snap?.language_breakdown || {}).map(([k, v]) => ({ name: k, value: v }))
   const objData = Object.entries(snap?.objection_breakdown || {}).map(([k, v]) => ({ name: k.replace(/_/g, ' '), value: v }))
 
-  // Simulated trend data
   const trendData = [
     {day:'Apr 16', rate:22}, {day:'Apr 17', rate:25}, {day:'Apr 18', rate:28},
     {day:'Apr 19', rate:30}, {day:'Apr 20', rate:31}, {day:'Apr 21', rate:33}, {day:'Apr 22', rate:34.2}
@@ -378,22 +376,25 @@ export function Analytics() {
 
       <div className="grid grid-cols-4 gap-4">
         {[
-          ['Conversion Rate', `${snap?.conversion_rate ?? '—'}%`, '#4cd97b', '↑ from 18% baseline'],
+          ['Conversion Rate', `${snap?.conversion_rate ?? '—'}%`, '#4cd97b', 'from 18% baseline'],
           ['Hot Leads', snap?.hot ?? '—', '#ff5c5c', 'RM handoff ready'],
           ['Warm Leads', snap?.warm ?? '—', '#ffb830', 'WhatsApp sent'],
           ['Total Calls', snap?.total_conversations ?? '—', '#4f8cff', 'Conversations logged'],
         ].map(([label, value, color, delta]) => (
-          <div key={label} className="card relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: color }} />
-            <div className="text-xs text-slate-400 mb-2">{label}</div>
+          <div key={label} className="card relative">
+            <div className="text-xs text-slate-500 mb-2">{label}</div>
             <div className="font-display font-extrabold text-2xl" style={{ color }}>{value}</div>
-            <div className="text-xs text-success mt-1.5">↑ {delta}</div>
+            <div className="flex items-center gap-1 text-xs text-success mt-1.5">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path d="M5 1.5L8.5 7H1.5L5 1.5Z" fill="currentColor" />
+              </svg>
+              {delta}
+            </div>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-2 gap-5">
-        {/* Trend */}
         <div className="card">
           <div className="section-label">Conversion Trend (7 Days)</div>
           <ResponsiveContainer width="100%" height={160}>
@@ -402,7 +403,7 @@ export function Analytics() {
               <XAxis dataKey="day" tick={{ fill: '#6b7280', fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis domain={[15, 40]} tick={{ fill: '#6b7280', fontSize: 10 }} axisLine={false} tickLine={false} />
               <Tooltip
-                contentStyle={{ background: '#141929', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, fontSize: 12 }}
+                contentStyle={{ background: '#141929', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, fontSize: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.4)' }}
                 formatter={(v) => [`${v}%`, 'Conversion']}
               />
               <Line type="monotone" dataKey="rate" stroke="#4f8cff" strokeWidth={2.5} dot={{ fill: '#4f8cff', r: 4 }} />
@@ -410,16 +411,15 @@ export function Analytics() {
           </ResponsiveContainer>
         </div>
 
-        {/* Language */}
         <div className="card">
           <div className="section-label">Language Breakdown</div>
           {langData.length > 0 ? (
             <ResponsiveContainer width="100%" height={160}>
-              <BarChart data={langData} barSize={22}>
+              <BarChart data={langData} barSize={24}>
                 <XAxis dataKey="name" tick={{ fill: '#6b7280', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis hide />
-                <Tooltip contentStyle={{ background: '#141929', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, fontSize: 12 }} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-                <Bar dataKey="value" radius={[4,4,0,0]}>
+                <Tooltip contentStyle={{ background: '#141929', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, fontSize: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.4)' }} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+                <Bar dataKey="value" radius={[3,3,0,0]}>
                   {langData.map((_, i) => <Cell key={i} fill={['#4f8cff','#ffb830','#7c5cfc','#ff5c5c','#4cd97b','#5ce8d4','#f4845a'][i%7]} />)}
                 </Bar>
               </BarChart>
@@ -428,7 +428,6 @@ export function Analytics() {
         </div>
       </div>
 
-      {/* Objections */}
       {objData.length > 0 && (
         <div className="card">
           <div className="section-label">Objection Frequency</div>
@@ -438,7 +437,7 @@ export function Analytics() {
               return (
                 <div key={i} className="flex items-center gap-3">
                   <div className="w-36 text-xs text-slate-400 text-right flex-shrink-0">{o.name}</div>
-                  <div className="flex-1 bg-white/[0.06] rounded-full h-2 overflow-hidden">
+                  <div className="flex-1 rounded-full h-2 overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
                     <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${(o.value/max)*100}%` }} />
                   </div>
                   <div className="w-6 text-xs text-slate-400">{o.value}</div>
@@ -452,8 +451,6 @@ export function Analytics() {
   )
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// src/pages/RMHandoff.jsx
 export function RMHandoff() {
   const [queue, setQueue] = useState([])
   const [selected, setSelected] = useState(null)
@@ -470,15 +467,17 @@ export function RMHandoff() {
           <h2 className="font-display font-bold text-xl">RM Handoff Queue</h2>
           <p className="text-slate-400 text-sm mt-1">Hot leads ready for human follow-up</p>
         </div>
-        <div className="bg-red-500/10 border border-red-500/20 px-4 py-2 rounded-xl text-sm text-red-400 font-medium">
-          🔥 {queue.length} leads waiting
+        <div className="px-4 py-2 rounded-lg text-sm font-medium" style={{ background: 'rgba(255, 92, 92, 0.1)', border: '1px solid rgba(255, 92, 92, 0.2)', color: '#ff5c5c' }}>
+          {queue.length} leads waiting
         </div>
       </div>
 
       {queue.length === 0 ? (
         <div className="card text-center py-16 text-slate-500">
-          <div className="text-4xl mb-3">📭</div>
-          <div>No hot leads yet. Run some calls to generate handoffs.</div>
+          <div className="w-12 h-12 rounded-xl bg-slate-500/10 mx-auto mb-4 flex items-center justify-center">
+            <FileText size={24} className="text-slate-500" />
+          </div>
+          <div className="text-sm">No hot leads yet. Run some calls to generate handoffs.</div>
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-5">
@@ -486,24 +485,35 @@ export function RMHandoff() {
             {queue.map(lead => (
               <div key={lead.id}
                 onClick={() => setSelected(lead)}
-                className={`card cursor-pointer transition-all hover:border-accent/30 ${selected?.id === lead.id ? 'border-accent/40 bg-accent/5' : ''}`}>
+                className={`card cursor-pointer transition-all ${selected?.id === lead.id ? 'border-accent/40' : ''}`}
+                style={selected?.id === lead.id ? { borderColor: 'rgba(79, 140, 255, 0.4)' } : {}}>
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-hot to-warm flex items-center justify-center text-white font-display font-bold flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-display font-bold flex-shrink-0"
+                    style={{ background: 'linear-gradient(135deg, #ff5c5c, #ffb830)' }}>
                     {lead.name?.charAt(0)}
                   </div>
-                  <div className="flex-1">
-                    <div className="font-semibold">{lead.name} <span className="ml-2 badge-hot">🔥 {lead.score}</span></div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-sm">{lead.name} <LeadBadge label="hot" /></div>
                     <div className="text-xs text-slate-400 mt-0.5">{lead.type} · {lead.language} · {lead.city}</div>
                     {lead.last_call_summary && (
                       <div className="text-sm text-slate-300 mt-2">{lead.last_call_summary}</div>
                     )}
                     {lead.recommended_action && (
-                      <div className="text-xs text-success mt-1.5">📌 {lead.recommended_action}</div>
+                      <div className="flex items-center gap-1 text-xs mt-1.5 text-success">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="3" fill="currentColor"/></svg>
+                        {lead.recommended_action}
+                      </div>
                     )}
                   </div>
                   <div className="flex gap-2 flex-shrink-0">
-                    <button className="btn-primary btn-sm">📞 Call Now</button>
-                    <button className="btn-ghost btn-sm">📲 WhatsApp</button>
+                    <button className="btn-primary btn-sm">
+                      <Phone size={12} />
+                      Call
+                    </button>
+                    <button className="btn-ghost btn-sm">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      WhatsApp
+                    </button>
                   </div>
                 </div>
               </div>
@@ -522,26 +532,35 @@ export function RMHandoff() {
                   ['Score', selected.score],
                 ].map(([k, v]) => (
                   <div key={k} className="flex justify-between">
-                    <span className="text-slate-400">{k}</span><span>{v}</span>
+                    <span className="text-slate-400">{k}</span><span className="text-right">{v}</span>
                   </div>
                 ))}
               </div>
               {selected.whatsapp_message && (
-                <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3">
-                  <div className="text-xs text-slate-500 mb-2">📱 WhatsApp Message (ready to send)</div>
+                <div className="rounded-lg p-3 border text-sm" style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'var(--color-border)' }}>
+                  <div className="text-xs text-slate-500 mb-2">WhatsApp Message (ready to send)</div>
                   <div className="text-sm text-slate-300 leading-relaxed">{selected.whatsapp_message}</div>
                 </div>
               )}
               <div className="space-y-2">
-                <button className="btn-primary w-full">📞 Call Now</button>
-                <button className="btn-ghost w-full">📲 Send WhatsApp</button>
+                <button className="btn-primary w-full">
+                  <Phone size={14} />
+                  Call Now
+                </button>
+                <button className="btn-ghost w-full">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  Send WhatsApp
+                </button>
                 <button onClick={async () => {
                   const { leadsApi } = await import('../services/api.js')
                   await leadsApi.patch(selected.id, { status: 'converted' })
                   setQueue(q => q.filter(l => l.id !== selected.id))
                   setSelected(null)
-                }} className="w-full px-4 py-2 rounded-xl border border-success/30 text-success text-sm hover:bg-success/10 transition-colors">
-                  ✅ Mark as Converted
+                }} className="w-full px-4 py-2 rounded-lg text-sm transition-colors"
+                  style={{ border: '1px solid rgba(76, 217, 123, 0.3)', color: '#4cd97b' }}
+                  onMouseOver={e => e.currentTarget.style.background = 'rgba(76, 217, 123, 0.1)'}
+                  onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+                  Mark as Converted
                 </button>
               </div>
             </div>
@@ -556,8 +575,6 @@ export function RMHandoff() {
   )
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// src/pages/ObjectionBank.jsx
 const OBJECTIONS = [
   {
     id: 'broker',
@@ -633,37 +650,35 @@ export function ObjectionBank() {
       </div>
 
       <div className="grid grid-cols-3 gap-5">
-        {/* List */}
         <div className="space-y-2">
           {OBJECTIONS.map(obj => (
             <button key={obj.id} onClick={() => setSelected(obj)}
-              className={`w-full text-left p-4 rounded-2xl border transition-all ${
+              className={`w-full text-left p-4 rounded-xl border transition-all ${
                 selected.id === obj.id
-                  ? 'bg-accent/10 border-accent/30 text-white'
-                  : 'bg-panel border-white/[0.06] text-slate-300 hover:border-white/[0.12]'
+                  ? 'bg-accent/10 border-accent/30'
+                  : 'bg-panel border-white/[0.06] hover:border-white/[0.12]'
               }`}>
-              <div className="font-semibold text-sm">{obj.title}</div>
+              <div className="font-semibold text-sm text-slate-200">{obj.title}</div>
               <div className="flex items-center gap-2 mt-2">
-                <div className="flex-1 bg-white/[0.08] rounded-full h-1.5 overflow-hidden">
+                <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
                   <div className="h-full rounded-full bg-success" style={{ width: `${obj.resolutionRate}%` }} />
                 </div>
-                <span className="text-xs text-success">{obj.resolutionRate}%</span>
+                <span className="text-xs text-success font-medium">{obj.resolutionRate}%</span>
               </div>
             </button>
           ))}
         </div>
 
-        {/* Detail */}
         <div className="col-span-2 card space-y-5">
           <div>
             <div className="font-display font-bold text-xl">{selected.title}</div>
-            <div className="text-xs text-slate-500 mt-1 bg-white/[0.04] rounded-lg px-3 py-2 inline-block">
+            <div className="text-xs text-slate-500 mt-2 rounded-lg px-3 py-2 inline-block" style={{ background: 'rgba(255,255,255,0.04)' }}>
               Trigger: {selected.trigger}
             </div>
           </div>
 
-          <div className="bg-white/[0.03] rounded-xl p-4 border border-white/[0.06]">
-            <div className="text-xs text-slate-500 mb-2">💡 Strategy</div>
+          <div className="rounded-xl p-4 border" style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'var(--color-border)' }}>
+            <div className="text-xs text-slate-500 mb-2">Strategy</div>
             <div className="text-sm text-slate-200">{selected.strategy}</div>
           </div>
 
@@ -671,15 +686,17 @@ export function ObjectionBank() {
             <div className="flex gap-2 mb-4">
               {['English', 'Hindi', 'Hinglish'].map(lang => (
                 <button key={lang} onClick={() => setActiveLang(lang)}
-                  className={`px-4 py-1.5 rounded-xl text-sm transition-all ${
-                    activeLang === lang ? 'bg-accent text-white' : 'bg-white/[0.05] text-slate-400 hover:text-slate-200'
+                  className={`px-4 py-1.5 rounded-lg text-sm transition-all ${
+                    activeLang === lang
+                      ? 'bg-accent text-white shadow-sm'
+                      : 'bg-white/[0.05] text-slate-400 hover:text-slate-200'
                   }`}>
                   {lang}
                 </button>
               ))}
             </div>
-            <div className="bg-panel border border-white/[0.07] rounded-2xl p-5">
-              <div className="text-xs text-accent mb-3">🤖 Agent Response ({activeLang})</div>
+            <div className="card">
+              <div className="text-xs text-accent mb-3">Agent Response ({activeLang})</div>
               <div className="text-sm text-slate-200 leading-relaxed">
                 {selected.responses[activeLang] || selected.responses.English}
               </div>
@@ -687,11 +704,11 @@ export function ObjectionBank() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="text-sm text-slate-400">Resolution rate:</div>
-            <div className="flex-1 bg-white/[0.06] rounded-full h-2 overflow-hidden">
+            <div className="text-sm text-slate-400 flex-shrink-0">Resolution rate:</div>
+            <div className="flex-1 rounded-full h-2 overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
               <div className="h-full bg-success rounded-full" style={{ width: `${selected.resolutionRate}%` }} />
             </div>
-            <div className="text-sm text-success font-semibold">{selected.resolutionRate}%</div>
+            <div className="text-sm text-success font-semibold flex-shrink-0">{selected.resolutionRate}%</div>
           </div>
         </div>
       </div>
@@ -699,8 +716,6 @@ export function ObjectionBank() {
   )
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// src/pages/Settings.jsx
 export function Settings() {
   const [saved, setSaved] = useState(false)
   const [config, setConfig] = useState(() => {
@@ -786,13 +801,12 @@ export function Settings() {
         </div>
       ))}
 
-      {/* Thresholds */}
       <div className="card">
         <div className="section-label">Qualification Thresholds</div>
         <div className="space-y-5">
           {[
-            {label: '🔥 Hot threshold', key: 'hotThreshold', color: '#ff5c5c'},
-            {label: '🌡 Warm threshold', key: 'warmThreshold', color: '#ffb830'},
+            {label: 'Hot threshold', key: 'hotThreshold', color: '#ff5c5c'},
+            {label: 'Warm threshold', key: 'warmThreshold', color: '#ffb830'},
           ].map(t => (
             <div key={t.key}>
               <div className="flex justify-between text-sm mb-2">
@@ -807,7 +821,6 @@ export function Settings() {
         </div>
       </div>
 
-      {/* Integration status */}
       <div className="card">
         <div className="section-label">Integration Status</div>
         {[
@@ -820,14 +833,14 @@ export function Settings() {
           <div key={name} className="flex items-center justify-between py-2.5 border-b border-white/[0.04] last:border-0">
             <span className="text-sm text-slate-300">{name}</span>
             <span className={`text-xs font-medium ${connected ? 'text-success' : 'text-slate-500'}`}>
-              {connected ? '✅ Connected' : '⚙️ Configure'}
+              {connected ? 'Connected' : 'Configure'}
             </span>
           </div>
         ))}
       </div>
 
       <button onClick={save} className="btn-primary px-8">
-        {saved ? '✅ Saved!' : 'Save Settings'}
+        {saved ? 'Saved!' : 'Save Settings'}
       </button>
     </div>
   )

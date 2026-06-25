@@ -1,4 +1,3 @@
-// src/App.jsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import Sidebar from './components/shared/Sidebar.jsx'
@@ -15,15 +14,19 @@ import { analyticsApi } from './services/api.js'
 function TopBar({ title }) {
   return (
     <div className="h-14 bg-surface border-b border-white/[0.06] flex items-center px-6 sticky top-0 z-40">
-      <div className="font-display font-bold text-base">{title}</div>
+      <div className="font-display font-semibold text-sm text-slate-300">{title}</div>
       <div className="ml-auto flex items-center gap-3">
-        <div className="flex items-center gap-1.5 text-xs bg-green-500/10 border border-green-500/20 text-green-400 px-3 py-1.5 rounded-full">
+        <div className="flex items-center gap-1.5 text-xs text-green-400/80 bg-green-500/8 px-3 py-1.5 rounded-lg border border-green-500/15"
+          style={{ background: 'rgba(76, 217, 123, 0.08)' }}>
           <span className="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot inline-block" />
           Agent Active
         </div>
-        <div className="text-xs bg-accent/10 border border-accent/20 text-accent px-3 py-1.5 rounded-full cursor-pointer hover:bg-accent/15 transition-colors"
-          onClick={() => window.location.href = '/agent'}>
-          ▶ Live Demo
+        <div
+          className="text-xs text-accent px-3 py-1.5 rounded-lg cursor-pointer transition-all duration-150 border border-accent/20 hover:bg-accent/10"
+          style={{ background: 'rgba(79, 140, 255, 0.06)' }}
+          onClick={() => window.location.href = '/agent'}
+        >
+          Live Demo
         </div>
       </div>
     </div>
@@ -59,7 +62,7 @@ export default function App() {
     return () => window.removeEventListener('popstate', handleNav)
   }, [])
 
-  const title = PAGE_TITLES[currentPath] || 'Rupeezy AI'
+  const title = PAGE_TITLES[currentPath] || 'Rupeezy'
 
   return (
     <BrowserRouter>
