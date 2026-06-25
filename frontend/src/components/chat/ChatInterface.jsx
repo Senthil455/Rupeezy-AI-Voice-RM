@@ -1,16 +1,17 @@
-// src/components/chat/ChatInterface.jsx
 import { useState, useRef, useEffect } from 'react'
-import { Send, Mic, MicOff, PhoneOff, Phone, RefreshCcw } from 'lucide-react'
+import { Send, Mic, MicOff, PhoneOff, Phone, RefreshCcw, Bot, User } from 'lucide-react'
 import { VoiceVisualizer, LeadBadge, ScoreRing, ProgressBar } from '../shared/index.jsx'
 
 function TypingIndicator() {
   return (
     <div className="msg-in flex gap-2.5 items-end">
-      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-accent to-accent2 flex items-center justify-center text-xs flex-shrink-0">🤖</div>
-      <div className="bg-panel border border-white/[0.07] rounded-2xl rounded-bl-sm px-4 py-3">
+      <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+        <Bot size={14} className="text-white" />
+      </div>
+      <div className="rounded-2xl rounded-bl-sm px-4 py-3" style={{ background: 'var(--color-panel)', border: '1px solid var(--color-border)' }}>
         <div className="flex gap-1.5 items-center h-4">
           {[0,1,2].map(i => (
-            <span key={i} className="typing-dot w-1.5 h-1.5 bg-slate-400 rounded-full block" style={{ animationDelay: `${i*0.2}s` }} />
+            <span key={i} className="typing-dot w-1.5 h-1.5 rounded-full block" style={{ background: 'var(--color-text-muted)', animationDelay: `${i*0.15}s` }} />
           ))}
         </div>
       </div>
@@ -22,20 +23,24 @@ function Message({ msg }) {
   const isAgent = msg.role === 'agent'
   return (
     <div className={`msg-in flex gap-2.5 items-end ${isAgent ? '' : 'flex-row-reverse'}`}>
-      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs flex-shrink-0 ${
-        isAgent ? 'bg-gradient-to-br from-accent to-accent2' : 'bg-white/[0.08] border border-white/[0.1]'
+      <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
+        isAgent ? 'bg-accent' : 'bg-white/[0.08]'
       }`}>
-        {isAgent ? '🤖' : '😊'}
+        {isAgent ? <Bot size={14} className="text-white" /> : <User size={14} className="text-slate-300" />}
       </div>
       <div className={`max-w-[78%] ${isAgent ? '' : 'items-end flex flex-col'}`}>
-        <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+        <div className={`px-4 py-2.5 text-sm leading-relaxed ${
           isAgent
-            ? 'bg-panel border border-white/[0.07] rounded-bl-sm text-slate-200'
-            : 'bg-accent/20 border border-accent/25 rounded-br-sm text-slate-100'
-        }`}>
+            ? 'rounded-2xl rounded-bl-sm text-slate-200'
+            : 'rounded-2xl rounded-br-sm text-slate-100'
+        }`}
+          style={isAgent
+            ? { background: 'var(--color-panel)', border: '1px solid var(--color-border)' }
+            : { background: 'rgba(79, 140, 255, 0.15)', border: '1px solid rgba(79, 140, 255, 0.2)' }
+          }>
           {msg.content}
         </div>
-        <div className={`text-[10px] text-slate-600 mt-1 ${isAgent ? '' : 'text-right'}`}>
+        <div className={`text-[10px] mt-1 ${isAgent ? '' : 'text-right'}`} style={{ color: 'var(--color-text-muted)' }}>
           {new Date(msg.timestamp || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
@@ -60,7 +65,7 @@ function ScorePanel({ score }) {
         <ScoreRing score={avg} label={score.label} />
         <div>
           <div className="font-display font-bold text-base" style={{ color }}>
-            {{ hot: '🔥 Hot', warm: '🌡 Warm', cold: '❄ Cold' }[score.label] || 'Scoring...'}
+            {{ hot: 'Hot', warm: 'Warm', cold: 'Cold' }[score.label] || 'Scoring...'}
           </div>
           <div className="text-xs text-slate-400 mt-0.5">{score.reasoning || 'Analyzing conversation...'}</div>
         </div>
@@ -89,7 +94,6 @@ export default function ChatInterface({ lead, onCallEnd, onCallStart }) {
   const chatEndRef = useRef(null)
   const inputRef = useRef(null)
 
-  // Import hook
   const [conv, setConv] = useState({
     convId: null, messages: [], state: 'INIT', language: 'english',
     score: null, summary: null, isActive: false, isTyping: false, callDuration: 0
@@ -212,12 +216,10 @@ export default function ChatInterface({ lead, onCallEnd, onCallStart }) {
 
   return (
     <div className="flex gap-5 h-full">
-      {/* Main Chat */}
       <div className="flex-1 flex flex-col card p-0 overflow-hidden min-h-0">
-        {/* Header */}
         <div className="flex items-center gap-3 p-4 border-b border-white/[0.06]">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent2 flex items-center justify-center text-lg flex-shrink-0">
-            🤖
+          <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+            <Bot size={20} className="text-white" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="font-semibold text-sm">Priya — Rupeezy AI Agent</div>
@@ -228,7 +230,7 @@ export default function ChatInterface({ lead, onCallEnd, onCallStart }) {
                   Live · {formatDuration(conv.callDuration)} · {conv.language}
                 </>
               ) : (
-                conv.state === 'END' ? '✅ Call ended' : 'Ready to call'
+                conv.state === 'END' ? 'Call ended' : 'Ready to call'
               )}
             </div>
           </div>
@@ -240,7 +242,10 @@ export default function ChatInterface({ lead, onCallEnd, onCallStart }) {
               </button>
             )}
             {conv.isActive && (
-              <button onClick={handleEndCall} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs hover:bg-red-500/20 transition-colors">
+              <button onClick={handleEndCall} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-colors"
+                style={{ background: 'rgba(255, 92, 92, 0.1)', border: '1px solid rgba(255, 92, 92, 0.2)', color: '#ff5c5c' }}
+                onMouseOver={e => e.currentTarget.style.background = 'rgba(255, 92, 92, 0.2)'}
+                onMouseOut={e => e.currentTarget.style.background = 'rgba(255, 92, 92, 0.1)'}>
                 <PhoneOff size={14} /> End
               </button>
             )}
@@ -253,11 +258,12 @@ export default function ChatInterface({ lead, onCallEnd, onCallStart }) {
           </div>
         </div>
 
-        {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0" style={{ maxHeight: '380px' }}>
           {conv.messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-32 text-slate-500 text-sm text-center">
-              <div className="text-3xl mb-3">🎙️</div>
+              <div className="w-10 h-10 rounded-xl bg-slate-500/10 flex items-center justify-center mb-3">
+                <Mic size={20} className="text-slate-500" />
+              </div>
               {lead
                 ? `Click "Start Call" to begin the AI conversation with ${lead.name}`
                 : 'Select a lead from the pipeline to start a call'}
@@ -269,7 +275,6 @@ export default function ChatInterface({ lead, onCallEnd, onCallStart }) {
           <div ref={chatEndRef} />
         </div>
 
-        {/* Input */}
         <div className="p-3 border-t border-white/[0.06] flex gap-2 items-center">
           <input
             ref={inputRef}
@@ -283,7 +288,7 @@ export default function ChatInterface({ lead, onCallEnd, onCallStart }) {
           <button
             onClick={voiceActive ? stopVoice : startVoice}
             disabled={!conv.isActive}
-            className={`p-2.5 rounded-xl border text-sm transition-colors ${
+            className={`p-2.5 rounded-lg border text-sm transition-colors ${
               voiceActive
                 ? 'bg-red-500/20 border-red-500/30 text-red-400'
                 : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:text-slate-200'
@@ -302,21 +307,19 @@ export default function ChatInterface({ lead, onCallEnd, onCallStart }) {
         </div>
       </div>
 
-      {/* Score Panel */}
       <div className="w-64 flex flex-col gap-4 flex-shrink-0">
         <div className="card">
           <div className="section-label">Lead Score</div>
           <ScorePanel score={conv.score} />
         </div>
 
-        {/* Objections */}
         {conv.score?.objections_detected?.length > 0 && (
           <div className="card">
             <div className="section-label">Objections Detected</div>
             <div className="space-y-1.5">
               {conv.score.objections_detected.map(obj => (
                 <div key={obj} className="flex items-center gap-2 text-xs">
-                  <span className="text-success">✅</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-success inline-block" />
                   <span className="text-slate-300">{obj.replace(/_/g, ' ')}</span>
                 </div>
               ))}
@@ -324,16 +327,15 @@ export default function ChatInterface({ lead, onCallEnd, onCallStart }) {
           </div>
         )}
 
-        {/* Summary (post-call) */}
         {conv.summary && (
           <div className="card">
             <div className="section-label">Post-Call Summary</div>
             <div className="text-xs text-slate-300 space-y-2">
               <div className="font-semibold text-sm text-white">{conv.summary.headline}</div>
               <div><span className="text-slate-500">Action: </span>{conv.summary.recommended_action}</div>
-              <div className="mt-3 p-2.5 bg-white/[0.04] rounded-lg border border-white/[0.06]">
-                <div className="text-slate-500 mb-1">📱 WhatsApp</div>
-                <div className="text-xs leading-relaxed">{conv.summary.whatsapp_message}</div>
+              <div className="mt-3 p-2.5 rounded-lg border text-xs leading-relaxed" style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'var(--color-border)' }}>
+                <div className="text-slate-500 mb-1">WhatsApp</div>
+                <div>{conv.summary.whatsapp_message}</div>
               </div>
             </div>
           </div>

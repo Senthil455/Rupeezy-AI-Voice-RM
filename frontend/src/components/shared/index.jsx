@@ -1,4 +1,3 @@
-// src/components/shared/ScoreRing.jsx
 export function ScoreRing({ score = 0, label = 'cold', size = 64 }) {
   const radius = (size - 10) / 2
   const circumference = 2 * Math.PI * radius
@@ -17,7 +16,7 @@ export function ScoreRing({ score = 0, label = 'cold', size = 64 }) {
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
         <circle
           cx={size / 2} cy={size / 2} r={radius}
-          fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={5}
+          fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={5}
         />
         <circle
           cx={size / 2} cy={size / 2} r={radius}
@@ -25,7 +24,7 @@ export function ScoreRing({ score = 0, label = 'cold', size = 64 }) {
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           strokeLinecap="round"
-          style={{ transition: 'stroke-dashoffset 0.8s ease' }}
+          style={{ transition: 'stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1)' }}
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
@@ -35,66 +34,72 @@ export function ScoreRing({ score = 0, label = 'cold', size = 64 }) {
   )
 }
 
-// src/components/shared/LeadBadge.jsx
+const BADGE_CONFIG = {
+  hot: { bg: 'rgba(255, 92, 92, 0.1)', border: 'rgba(255, 92, 92, 0.25)', text: '#ff5c5c', dot: '#ff5c5c', label: 'Hot' },
+  warm: { bg: 'rgba(255, 184, 48, 0.1)', border: 'rgba(255, 184, 48, 0.25)', text: '#ffb830', dot: '#ffb830', label: 'Warm' },
+  cold: { bg: 'rgba(92, 232, 212, 0.1)', border: 'rgba(92, 232, 212, 0.25)', text: '#5ce8d4', dot: '#5ce8d4', label: 'Cold' },
+  new: { bg: 'rgba(79, 140, 255, 0.1)', border: 'rgba(79, 140, 255, 0.25)', text: '#4f8cff', dot: '#4f8cff', label: 'New' },
+  calling: { bg: 'rgba(124, 92, 252, 0.1)', border: 'rgba(124, 92, 252, 0.25)', text: '#7c5cfc', dot: '#7c5cfc', label: 'Calling' },
+  converted: { bg: 'rgba(76, 217, 123, 0.1)', border: 'rgba(76, 217, 123, 0.25)', text: '#4cd97b', dot: '#4cd97b', label: 'Converted' },
+}
+
 export function LeadBadge({ label }) {
-  const config = {
-    hot: { cls: 'badge-hot', emoji: '🔥', text: 'Hot' },
-    warm: { cls: 'badge-warm', emoji: '🌡', text: 'Warm' },
-    cold: { cls: 'badge-cold', emoji: '❄', text: 'Cold' },
-    new: { cls: 'badge-new', emoji: '✨', text: 'New' },
-    calling: { cls: 'badge-calling', emoji: '📞', text: 'Calling' },
-    converted: { cls: 'badge-hot', emoji: '✅', text: 'Converted' },
-  }
-  const c = config[label] || config.new
+  const c = BADGE_CONFIG[label] || BADGE_CONFIG.new
   return (
-    <span className={c.cls}>
-      {c.emoji} {c.text}
+    <span
+      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium"
+      style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}
+    >
+      <span className="w-1.5 h-1.5 rounded-full" style={{ background: c.dot }} />
+      {c.label}
     </span>
   )
 }
 
-// src/components/shared/KpiCard.jsx
 export function KpiCard({ label, value, delta, deltaUp, accentColor, icon }) {
   return (
-    <div className="card relative overflow-hidden">
-      <div
-        className="absolute top-0 left-0 right-0 h-[2px]"
-        style={{ background: accentColor }}
-      />
+    <div
+      className="relative overflow-hidden rounded-xl p-5"
+      style={{ background: 'var(--color-panel)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-card)' }}
+    >
       <div className="flex items-start justify-between">
-        <div>
-          <div className="text-slate-400 text-xs mb-2">{label}</div>
-          <div className="font-display font-extrabold text-2xl" style={{ color: accentColor || 'white' }}>
+        <div className="flex-1 min-w-0">
+          <div className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>{label}</div>
+          <div className="font-display font-bold text-2xl mt-1.5" style={{ color: accentColor || '#fff' }}>
             {value}
           </div>
           {delta && (
-            <div className={`text-xs mt-1.5 ${deltaUp ? 'text-success' : 'text-red-400'}`}>
-              {deltaUp ? '↑' : '↓'} {delta}
+            <div className="flex items-center gap-1 text-xs mt-2" style={{ color: deltaUp ? '#4cd97b' : '#ff5c5c' }}>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                {deltaUp
+                  ? <path d="M5 1.5L8.5 7H1.5L5 1.5Z" fill="currentColor" />
+                  : <path d="M5 8.5L1.5 3H8.5L5 8.5Z" fill="currentColor" />
+                }
+              </svg>
+              {delta}
             </div>
           )}
         </div>
         {icon && (
-          <div className="text-2xl opacity-60">{icon}</div>
+          <div className="text-lg flex-shrink-0 ml-3" style={{ opacity: 0.3 }}>{icon}</div>
         )}
       </div>
     </div>
   )
 }
 
-// src/components/shared/ProgressBar.jsx
 export function ProgressBar({ value, max = 100, color = '#4f8cff', height = 6 }) {
   const pct = Math.min(100, Math.max(0, (value / max) * 100))
   return (
-    <div className="bg-white/[0.06] rounded-full overflow-hidden" style={{ height }}>
+    <div className="rounded-full overflow-hidden" style={{ height, background: 'rgba(255,255,255,0.06)' }}>
       <div
-        className="h-full rounded-full transition-all duration-700"
+        className="h-full rounded-full transition-all duration-700 ease-out"
         style={{ width: `${pct}%`, background: color }}
       />
     </div>
   )
 }
 
-// src/components/shared/VoiceVisualizer.jsx
 export function VoiceVisualizer({ active = false }) {
   if (!active) return null
   return (
@@ -102,15 +107,14 @@ export function VoiceVisualizer({ active = false }) {
       {[...Array(8)].map((_, i) => (
         <div
           key={i}
-          className="voice-bar w-[3px] bg-accent rounded-full"
-          style={{ animationDelay: `${i * 0.1}s` }}
+          className="voice-bar w-[3px] rounded-full"
+          style={{ background: 'var(--color-accent)', animationDelay: `${i * 0.1}s` }}
         />
       ))}
     </div>
   )
 }
 
-// src/components/shared/PulseDot.jsx
 export function PulseDot({ color = '#4cd97b' }) {
   return (
     <span
