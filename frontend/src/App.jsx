@@ -1,76 +1,96 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import Sidebar from './components/shared/Sidebar.jsx'
 import { Dashboard } from './pages/Dashboard.jsx'
 import { AgentDemo } from './pages/AgentDemo.jsx'
-import { LeadPipeline } from './pages/AllPages.jsx'
-import { Upload } from './pages/AllPages.jsx'
-import { Analytics } from './pages/AllPages.jsx'
-import { RMHandoff } from './pages/AllPages.jsx'
-import { ObjectionBank } from './pages/AllPages.jsx'
-import { Settings } from './pages/AllPages.jsx'
+import { LeadPipeline, Upload, Analytics, RMHandoff, ObjectionBank, Settings } from './pages/AllPages.jsx'
 import { analyticsApi } from './services/api.js'
+import { ToastProvider } from './components/shared/Toast.jsx'
+import { LayoutDashboard, Users, Mic2, BarChart3, PhoneForwarded, Upload as UploadIcon, Settings as SettingsIcon, Shield, Zap, Menu, X } from 'lucide-react'
 
-function TopBar({ title }) {
+const navItems = [
+  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/agent', icon: Mic2, label: 'AI Agent' },
+  { to: '/leads', icon: Users, label: 'Leads' },
+  { to: '/upload', icon: UploadIcon, label: 'Import' },
+  { to: '/analytics', icon: BarChart3, label: 'Analytics' },
+  { to: '/handoff', icon: PhoneForwarded, label: 'Handoff' },
+  { to: '/objections', icon: Shield, label: 'Objections' },
+  { to: '/settings', icon: SettingsIcon, label: 'Settings' },
+]
+
+function Sidebar() {
   return (
-    <div className="h-14 bg-surface border-b border-white/[0.06] flex items-center px-6 sticky top-0 z-40">
-      <div className="font-display font-semibold text-sm text-slate-300">{title}</div>
-      <div className="ml-auto flex items-center gap-3">
-        <div className="flex items-center gap-1.5 text-xs text-green-400/80 bg-green-500/8 px-3 py-1.5 rounded-lg border border-green-500/15"
-          style={{ background: 'rgba(76, 217, 123, 0.08)' }}>
-          <span className="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot inline-block" />
-          Agent Active
+    <aside className="fixed top-0 left-0 h-screen w-60 bg-sidebar z-50 flex flex-col">
+      <div className="h-14 flex items-center gap-3 px-4 border-b border-white/[0.06]">
+        <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+          <Zap size={14} className="text-white" />
         </div>
-        <div
-          className="text-xs text-accent px-3 py-1.5 rounded-lg cursor-pointer transition-all duration-150 border border-accent/20 hover:bg-accent/10"
-          style={{ background: 'rgba(79, 140, 255, 0.06)' }}
-          onClick={() => window.location.href = '/agent'}
-        >
-          Live Demo
+        <div>
+          <div className="font-display font-bold text-sm text-white">Rupeezy</div>
+          <div className="text-[10px] text-slate-500 tracking-wider">AI Voice RM</div>
         </div>
       </div>
-    </div>
+
+      <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto mt-2">
+        {navItems.map(({ to, icon: Icon, label }) => (
+          <NavLink key={to} to={to} end={to === '/'}
+            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <Icon size={16} />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className="p-3 border-t border-white/[0.06]">
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04]">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 pulse-dot" />
+          <span className="text-xs text-slate-400">All systems online</span>
+        </div>
+      </div>
+    </aside>
   )
 }
 
-const PAGE_TITLES = {
-  '/': 'Dashboard',
-  '/agent': 'Agent Demo',
-  '/leads': 'Lead Pipeline',
-  '/upload': 'Upload Leads',
-  '/analytics': 'Analytics',
-  '/handoff': 'RM Handoff',
-  '/objections': 'Objection Bank',
-  '/settings': 'Settings',
-}
-
 export default function App() {
-  const [stats, setStats] = useState(null)
   const [currentPath, setCurrentPath] = useState(window.location.pathname)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
-    analyticsApi.snapshot().then(setStats).catch(() => {})
-    const interval = setInterval(() => {
-      analyticsApi.snapshot().then(setStats).catch(() => {})
-    }, 30000)
-    return () => clearInterval(interval)
-  }, [])
-
-  useEffect(() => {
-    const handleNav = () => setCurrentPath(window.location.pathname)
+    const handleNav = () => { setCurrentPath(window.location.pathname); setMobileOpen(false) }
     window.addEventListener('popstate', handleNav)
     return () => window.removeEventListener('popstate', handleNav)
   }, [])
 
-  const title = PAGE_TITLES[currentPath] || 'Rupeezy'
+  const titles = {
+    '/': 'Dashboard', '/agent': 'AI Agent', '/leads': 'Lead Pipeline',
+    '/upload': 'Import Leads', '/analytics': 'Analytics',
+    '/handoff': 'RM Handoff', '/objections': 'Objection Bank', '/settings': 'Settings',
+  }
+  const title = titles[currentPath] || 'Rupeezy'
 
   return (
     <BrowserRouter>
       <div className="flex min-h-screen bg-bg">
-        <Sidebar stats={stats} />
-        <div className="flex-1 ml-[220px] flex flex-col min-h-screen">
-          <TopBar title={title} />
-          <main className="flex-1 p-6 overflow-y-auto">
+        <Sidebar />
+
+        <div className="flex-1 ml-60">
+          <header className="h-14 bg-white border-b border-border flex items-center justify-between px-6 sticky top-0 z-40">
+            <div className="flex items-center gap-3">
+              <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden text-slate-400 hover:text-slate-600">
+                {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+              </button>
+              <h1 className="font-display font-semibold text-lg text-slate-800">{title}</h1>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot" />
+                AI Online
+              </div>
+              <a href="/agent" className="btn-primary text-xs !py-1.5 !px-3">Live Demo</a>
+            </div>
+          </header>
+
+          <main className="p-6">
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/agent" element={<AgentDemo />} />

@@ -5,14 +5,15 @@
     "status": "cold",
     "score": 0,
     "score_label": "cold",
-    "call_count": 5,
+    "call_count": 6,
     "language": "hindi",
     "conversation_ids": [
       "56a6cfd9-6c7",
       "6e665ac0-f11",
       "d34b1ca4-bb0",
       "12844704-4dc",
-      "bbfe8011-f93"
+      "bbfe8011-f93",
+      "a65c524c-ef0"
     ],
     "name": "Rajesh Kumar",
     "phone": "+919876543210",
@@ -21,7 +22,7 @@
     "city": "Delhi",
     "network_size": "50-100",
     "source": "demo",
-    "updated_at": "2026-05-06T20:11:59.766091",
+    "updated_at": "2026-06-26T18:32:36.834011",
     "last_call_summary": "Rajesh Kumar \u2014 COLD lead",
     "recommended_action": "Send WhatsApp follow-up and schedule callback",
     "whatsapp_message": "Hi Rajesh Kumar! Thanks for your time. Here's the Rupeezy partner sign-up link: rupeezy.in/partner"
@@ -135,10 +136,10 @@
   {
     "id": "F7CE3E50",
     "created_at": "2026-04-25T17:59:49.254751",
-    "status": "new",
+    "status": "calling",
     "score": 0,
     "score_label": "unscored",
-    "call_count": 0,
+    "call_count": 1,
     "language": "english",
     "conversation_ids": [],
     "name": "Mohammed Rafi",
@@ -147,7 +148,8 @@
     "type": "Finance Influencer",
     "city": "Hyderabad",
     "network_size": "200+",
-    "source": "referral"
+    "source": "referral",
+    "updated_at": "2026-06-26T18:32:36.905560"
   },
   {
     "id": "D3046571",
